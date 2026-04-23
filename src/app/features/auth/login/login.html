@@ -1,0 +1,72 @@
+<div class="login-wrapper">
+
+  <!-- HEADER -->
+  <div class="top-bar">
+    <img 
+      src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png"
+      alt="Logo EPQ"
+      class="logo">
+
+    <span>Empresas Públicas del Quindío EPQ</span>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="login-container">
+
+    <!-- FORM -->
+    <div class="form-box">
+
+      <h2>Inicio de sesión</h2>
+      <div class="divider"></div>
+
+      <!-- Usuario -->
+      <label>Usuario</label>
+      <input
+        type="text"
+        [(ngModel)]="username"
+        placeholder="Ingresar usuario">
+
+      <!-- Contraseña -->
+      <label>Contraseña</label>
+
+      <div class="password-container">
+        <input
+          [type]="showPassword ? 'text' : 'password'"
+          [(ngModel)]="password"
+          placeholder="Ingresar contraseña">
+
+        <button
+          type="button"
+          class="eye-btn"
+          (click)="togglePassword()">
+          👁
+        </button>
+      </div>
+
+      <!-- Botón login -->
+      <button
+        class="login-btn"
+        (click)="login()">
+        Iniciar sesión
+      </button>
+
+      <!-- Registro -->
+      <div class="register">
+        ¿No tienes una cuenta?
+        <a routerLink="/register">Regístrate aquí</a>
+      </div>
+
+    </div>
+
+    <!-- IMAGEN -->
+    <div class="image-box">
+      <div class="image-card">
+        <img
+          src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765379696/descarga_1_jgxs8e.jpg"
+          alt="Perfil">
+      </div>
+    </div>
+
+  </div>
+
+</div>

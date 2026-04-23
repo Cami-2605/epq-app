@@ -1,0 +1,99 @@
+<div class="dashboard-wrapper">
+
+  <div class="top-bar">
+    <div class="logo-section">
+      <img 
+        src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png"
+        class="logo">
+      <span>Empresas Públicas del Quindío EPQ</span>
+    </div>
+
+    <div class="user-section">
+      <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+      <div class="user-icon"></div>
+    </div>
+  </div>
+
+  <div class="dashboard-container">
+    <h2>Panel Administrador</h2>
+    <div class="divider"></div>
+
+    <div class="admin-actions">
+      <button (click)="goToReportes()">Ver reportes</button>
+      <button (click)="goToUsuarios()">Gestionar usuarios</button>
+      <button (click)="goToExcel()">Subir archivo</button>
+    </div>
+
+    <div class="form-grid">
+      <div>
+        <label>Seleccione el municipio</label>
+        <select [(ngModel)]="municipio">
+          <option value="" disabled selected>Seleccionar</option>
+          <option *ngFor="let m of municipios" [value]="m">
+            {{ m }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label>Seleccione el periodo</label>
+        <select [(ngModel)]="periodo">
+          <option value="" disabled selected>Seleccionar</option>
+          <option *ngFor="let p of periodos" [value]="p">
+            {{ p }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label>Desde</label>
+        <input type="date" [(ngModel)]="fechaInicio">
+      </div>
+
+      <div>
+        <label>Hasta</label>
+        <input type="date" [(ngModel)]="fechaFin">
+      </div>
+
+      <div>
+        <label>Tipo de reporte</label>
+        <select [(ngModel)]="tipoReporte">
+          <option value="" disabled selected>Seleccionar</option>
+          <option *ngFor="let t of tiposReporte" [value]="t">
+            {{ t }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+        <label>Tipo de archivo</label>
+        <select [(ngModel)]="tipoArchivo">
+          <option value="" disabled selected>Seleccionar</option>
+          <option *ngFor="let a of tiposArchivo" [value]="a">
+            {{ a }}
+          </option>
+        </select>
+      </div>
+
+      <div>
+  <label>Archivos Excel</label>
+
+  <div *ngFor="let file of archivos"
+       (click)="toggleArchivo(file.nombreArchivo)"
+       [class.selected]="archivosSeleccionados.includes(file.nombreArchivo)"
+       class="file-item">
+
+    {{ file.nombreArchivo }}
+
+  </div>
+</div>
+
+    </div>
+
+    <button class="generate-btn" (click)="generarReporte()">
+      Generar reporte
+    </button>
+
+  </div>
+
+</div>

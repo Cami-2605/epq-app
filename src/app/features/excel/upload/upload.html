@@ -1,0 +1,50 @@
+<div class="dashboard-wrapper">
+
+  <div class="top-bar">
+    <div class="logo-section">
+      <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" class="logo">
+      <span>Empresas Públicas del Quindío EPQ</span>
+    </div>
+
+    <div class="user-section">
+      <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
+      <div class="user-icon"></div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <span class="active">Excel reportes</span>
+    <span>Usuarios</span>
+  </div>
+
+  <div class="dashboard-container">
+    <h2>Excel reportes</h2>
+    <div class="divider"></div>
+
+    <div class="upload-section">
+      <input type="file" (change)="onFileSelected($event)">
+      <button (click)="uploadFile()">Subir archivo</button>
+    </div>
+
+    <div class="table-container">
+      <div class="table-header">
+        <span>Acción</span>
+        <span>Nombre documento</span>
+        <span>Id</span>
+        <span>Peso</span>
+      </div>
+
+      <div class="table-row" *ngFor="let file of files">
+        <div class="actions">
+          <button (click)="viewFile(file)">👁</button>
+          <button (click)="deleteFile(file)">🗑</button>
+          <button (click)="downloadFile(file)">⬇</button>
+        </div>
+
+        <span>{{ file.name }}</span>
+        <span>{{ file.id }}</span>
+        <span>{{ file.size }} KB</span>
+      </div>
+    </div>
+  </div>
+</div>

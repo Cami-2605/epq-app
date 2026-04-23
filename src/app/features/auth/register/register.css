@@ -1,0 +1,205 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* ===== WRAPPER ===== */
+
+.login-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg,#2f446b,#3e5b8c);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+
+.top-bar {
+  background: #f2f2f2;
+  padding: 15px 40px;
+  display: flex;
+  align-items: center;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+}
+
+.logo {
+  height: 55px;
+  margin-right: 15px;
+}
+
+.top-bar span {
+  color: #2f446b;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* ===== MAIN CONTENT ===== */
+
+.login-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 90px;
+  padding: 40px;
+}
+
+/* ===== FORM CARD ===== */
+
+.form-box {
+  width: 500px;
+  padding: 45px;
+  border-radius: 20px;
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+  color: white;
+}
+
+.form-box h2 {
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.divider {
+  width: 220px;
+  height: 3px;
+  background: #6bbf59;
+  margin: 0 auto 40px auto;
+  border-radius: 5px;
+}
+
+/* ===== GRID FORM ===== */
+
+.grid-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px 35px;
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+/* ===== LABEL ===== */
+
+label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* ===== INPUT ===== */
+
+input {
+  width: 100%;
+  padding: 12px 18px;
+  border-radius: 25px;
+  border: none;
+  background: #6bbf59;
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+input::placeholder {
+  color: rgba(255,255,255,0.85);
+}
+
+input:focus {
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.3);
+}
+
+/* ===== BUTTON ===== */
+
+.login-btn {
+  margin-top: 35px;
+  width: 220px;
+  padding: 12px;
+  border-radius: 25px;
+  border: none;
+  background: #6bbf59;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+/* ===== IMAGE SIDE ===== */
+
+.image-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* FOTO PERFIL */
+
+.image-card {
+  background: #cdd6c4;
+  width: 260px;
+  height: 260px;
+  padding: 20px;
+  border-radius: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 12px 25px rgba(0,0,0,0.3);
+}
+
+.image-card img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* BOTON SUBIR FOTO */
+
+.upload-btn {
+  margin-top: 20px;
+  padding: 10px 25px;
+  border-radius: 20px;
+  background: #6bbf59;
+  cursor: pointer;
+  font-size: 14px;
+  text-align: center;
+  color: white;
+  transition: 0.3s;
+}
+
+.upload-btn:hover {
+  transform: scale(1.05);
+}
+
+.upload-btn input {
+  display: none;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 1100px) {
+
+  .login-container {
+    flex-direction: column;
+    gap: 60px;
+  }
+
+  .form-box {
+    width: 100%;
+    max-width: 500px;
+  }
+
+}
