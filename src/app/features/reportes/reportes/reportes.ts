@@ -1,11 +1,17 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-reportes',
+  standalone: true,
   imports: [],
   templateUrl: './reportes.html',
-  styleUrl: './reportes.css',
+  styleUrls: ['./reportes.css']
 })
-export class Reportes {
+export class ReportesComponent {
+  constructor(private router: Router) {}
 
+  goBack() {
+    this.router.navigate(['/dashboard-admin']);
+  }
 }

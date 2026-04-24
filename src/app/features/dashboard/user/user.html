@@ -1,1 +1,47 @@
-<p>user works!</p>
+<div class="page-shell users-page">
+  <header class="top-bar">
+    <div class="brand">
+      <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" class="logo" alt="Logo EPQ" />
+      <span class="name">Empresas Publicas del Quindío EPQ</span>
+    </div>
+
+    <div class="user-actions">
+      <button class="pill-btn" (click)="logout()">Log out</button>
+      <div class="avatar"></div>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button (click)="goToExcel()">Excel reportes</button>
+    <span class="sep"></span>
+    <button class="active" (click)="goToUsuarios()">Usuarios</button>
+  </nav>
+
+  <main class="users-content">
+    <h1>Usuarios</h1>
+    <div class="section-divider"></div>
+
+    <section class="table-box">
+      <div class="table-header">
+        <span>Acción</span>
+        <span>Nombre</span>
+        <span>Cedula</span>
+        <span>Correo</span>
+        <span>telefono</span>
+      </div>
+
+      <div class="table-row" *ngFor="let user of users">
+        <div class="actions">
+          <button class="view" (click)="view(user)">👁</button>
+          <button class="delete" (click)="remove(user)">✖</button>
+          <button class="edit" (click)="edit(user)">✎</button>
+        </div>
+
+        <span>{{ user.nombre }}</span>
+        <span>{{ user.cedula }}</span>
+        <span>{{ user.correo }}</span>
+        <span>{{ user.telefono }}</span>
+      </div>
+    </section>
+  </main>
+</div>

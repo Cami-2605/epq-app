@@ -1,0 +1,118 @@
+.tabs {
+  width: 100%;
+  background: var(--blue-accent);
+  border-radius: 0 0 52px 52px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 80px;
+  padding: 20px 10px;
+}
+
+.tabs button {
+  border: 0;
+  background: transparent;
+  color: #e7effb;
+  font-size: 48px;
+  cursor: pointer;
+}
+
+.tabs .active {
+  font-weight: 700;
+}
+
+.tabs .sep {
+  width: 2px;
+  height: 60px;
+  background: #bad0ea;
+}
+
+.users-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 20px 24px 50px;
+}
+
+.users-content h1 {
+  font-size: 56px;
+  font-weight: 400;
+  margin: 26px 0 10px;
+}
+
+.table-box {
+  background: var(--blue-card);
+  border-radius: 62px;
+  padding: 14px 14px 24px;
+}
+
+.table-header,
+.table-row {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr 1.2fr 1.6fr 1.2fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.table-header {
+  background: var(--green);
+  border-radius: 999px;
+  min-height: 74px;
+  font-size: 38px;
+  font-weight: 700;
+}
+
+.table-row {
+  min-height: 96px;
+  font-size: 28px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.actions button {
+  border: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.actions .view {
+  background: #d9dcc5;
+}
+
+.actions .delete {
+  background: #ff5c57;
+}
+
+.actions .edit {
+  background: #f1da52;
+}
+
+@media (max-width: 960px) {
+  .tabs {
+    border-radius: 0 0 18px 18px;
+    gap: 18px;
+  }
+
+  .tabs button,
+  .users-content h1,
+  .table-header,
+  .table-row {
+    font-size: 20px;
+  }
+
+  .table-box {
+    border-radius: 20px;
+    overflow-x: auto;
+  }
+
+  .table-header,
+  .table-row {
+    min-width: 880px;
+  }
+}

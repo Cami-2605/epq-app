@@ -1,49 +1,149 @@
 .tabs {
+  width: 100%;
+  background: var(--blue-accent);
+  border-radius: 0 0 52px 52px;
   display: flex;
   justify-content: center;
-  gap: 40px;
-  background: #3e5b8c;
-  padding: 10px;
-  color: white;
+  align-items: center;
+  gap: 80px;
+  padding: 20px 10px;
 }
 
-.tabs span {
+.tabs button {
+  border: 0;
+  background: transparent;
+  color: #e7effb;
+  font-size: 48px;
   cursor: pointer;
 }
 
 .tabs .active {
-  font-weight: bold;
+  font-weight: 700;
 }
 
-.upload-section {
-  margin-bottom: 20px;
+.tabs .sep {
+  width: 2px;
+  height: 60px;
+  background: #bad0ea;
 }
 
-.table-container {
-  max-width: 800px;
-  margin: auto;
-  background: #3e5b8c;
-  padding: 20px;
-  border-radius: 20px;
+.excel-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 20px 24px 50px;
+}
+
+.excel-content h1 {
+  font-size: 56px;
+  font-weight: 400;
+  margin: 26px 0 10px;
+}
+
+.upload-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.upload-row input,
+.upload-row button {
+  border-radius: 999px;
+  border: 0;
+  height: 56px;
+  padding: 0 20px;
+  font-size: 22px;
+}
+
+.upload-row input {
+  background: #ebeff7;
+  color: #2f5fa8;
+}
+
+.upload-row button {
+  background: var(--green);
+  color: #fff;
+  cursor: pointer;
+}
+
+.table-box {
+  background: var(--blue-card);
+  border-radius: 62px;
+  padding: 14px 14px 24px;
 }
 
 .table-header,
 .table-row {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr 1fr;
-  color: white;
-  padding: 10px;
+  grid-template-columns: 1.4fr 2fr 1fr 1fr;
+  align-items: center;
+  gap: 10px;
 }
 
 .table-header {
-  background: #6bbf59;
-  border-radius: 15px;
+  background: var(--green);
+  border-radius: 999px;
+  min-height: 74px;
+  font-size: 38px;
+  font-weight: 700;
+}
+
+.table-row {
+  min-height: 96px;
+  font-size: 32px;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
 }
 
 .actions button {
-  margin-right: 5px;
-  border: none;
-  border-radius: 50%;
-  padding: 5px;
+  border: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
   cursor: pointer;
+}
+
+.actions .view {
+  background: #d9dcc5;
+}
+
+.actions .delete {
+  background: #ff5c57;
+}
+
+.actions .edit {
+  background: #f1da52;
+}
+
+@media (max-width: 960px) {
+  .tabs {
+    border-radius: 0 0 18px 18px;
+    gap: 18px;
+  }
+
+  .tabs button,
+  .excel-content h1,
+  .table-header,
+  .table-row {
+    font-size: 20px;
+  }
+
+  .upload-row {
+    flex-direction: column;
+  }
+
+  .table-box {
+    border-radius: 20px;
+    overflow-x: auto;
+  }
+
+  .table-header,
+  .table-row {
+    min-width: 700px;
+  }
 }

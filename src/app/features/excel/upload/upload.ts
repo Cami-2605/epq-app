@@ -60,6 +60,14 @@ uploadFile() {
     this.router.navigate(['/']);
   }
 
+  goToExcel() {
+    this.router.navigate(['/excel']);
+  }
+
+  goToUsuarios() {
+    this.router.navigate(['/dashboard-user']);
+  }
+  
   loadFiles() {
   fetch('http://localhost:8080/api/excel')
     .then(res => res.json())

@@ -1,32 +1,32 @@
-<div class="dashboard-wrapper">
-
-  <div class="top-bar">
-    <div class="logo-section">
-      <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" class="logo">
-      <span>Empresas Públicas del Quindío EPQ</span>
+<div class="page-shell excel-page">
+  <header class="top-bar">
+    <div class="brand">
+      <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" class="logo" alt="Logo EPQ" />
+      <span class="name">Empresas Publicas del Quindío EPQ</span>
     </div>
 
     <div class="user-section">
-      <button class="logout-btn" (click)="logout()">Cerrar sesión</button>
-      <div class="user-icon"></div>
+      <button class="pill-btn" (click)="logout()">Log out</button>
+      <div class="avatar"></div>
     </div>
-  </div>
+  </header>
 
-  <div class="tabs">
-    <span class="active">Excel reportes</span>
-    <span>Usuarios</span>
-  </div>
+   <nav class="tabs">
+    <button class="active" (click)="goToExcel()">Excel reportes</button>
+    <span class="sep"></span>
+    <button (click)="goToUsuarios()">Usuarios</button>
+  </nav>
 
-  <div class="dashboard-container">
-    <h2>Excel reportes</h2>
-    <div class="divider"></div>
+  <main class="excel-content">
+    <h1>Excel reportes</h1>
+    <div class="section-divider"></div>
 
-    <div class="upload-section">
-      <input type="file" (change)="onFileSelected($event)">
+   <section class="upload-row">
+      <input type="file" (change)="onFileSelected($event)" />
       <button (click)="uploadFile()">Subir archivo</button>
-    </div>
+    </section>
 
-    <div class="table-container">
+    <section class="table-box">
       <div class="table-header">
         <span>Acción</span>
         <span>Nombre documento</span>
@@ -36,15 +36,15 @@
 
       <div class="table-row" *ngFor="let file of files">
         <div class="actions">
-          <button (click)="viewFile(file)">👁</button>
-          <button (click)="deleteFile(file)">🗑</button>
-          <button (click)="downloadFile(file)">⬇</button>
+          <button class="view" (click)="viewFile(file)">👁</button>
+          <button class="delete" (click)="deleteFile(file)">✖</button>
+          <button class="edit" (click)="downloadFile(file)">✎</button>
         </div>
 
-        <span>{{ file.name }}</span>
-        <span>{{ file.id }}</span>
-        <span>{{ file.size }} KB</span>
+       <span>{{ file.nombreArchivo || file.name || 'Documento' }}</span>
+        <span>{{ file.id || 'N/A' }}</span>
+        <span>{{ file.peso || file.size || 'N/A' }}</span>
       </div>
-    </div>
-  </div>
+    </section>
+  </main>
 </div>

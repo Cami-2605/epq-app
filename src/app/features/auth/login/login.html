@@ -1,72 +1,43 @@
-<div class="login-wrapper">
-
-  <!-- HEADER -->
-  <div class="top-bar">
-    <img 
-      src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png"
-      alt="Logo EPQ"
-      class="logo">
-
-    <span>Empresas Públicas del Quindío EPQ</span>
-  </div>
-
-  <!-- MAIN CONTENT -->
-  <div class="login-container">
-
-    <!-- FORM -->
-    <div class="form-box">
-
-      <h2>Inicio de sesión</h2>
-      <div class="divider"></div>
-
-      <!-- Usuario -->
-      <label>Usuario</label>
-      <input
-        type="text"
-        [(ngModel)]="username"
-        placeholder="Ingresar usuario">
-
-      <!-- Contraseña -->
-      <label>Contraseña</label>
-
-      <div class="password-container">
-        <input
-          [type]="showPassword ? 'text' : 'password'"
-          [(ngModel)]="password"
-          placeholder="Ingresar contraseña">
-
-        <button
-          type="button"
-          class="eye-btn"
-          (click)="togglePassword()">
-          👁
-        </button>
-      </div>
-
-      <!-- Botón login -->
-      <button
-        class="login-btn"
-        (click)="login()">
-        Iniciar sesión
-      </button>
-
-      <!-- Registro -->
-      <div class="register">
-        ¿No tienes una cuenta?
-        <a routerLink="/register">Regístrate aquí</a>
-      </div>
-
+<div class="page-shell auth-page">
+  <header class="top-bar">
+    <div class="brand">
+      <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" alt="Logo EPQ" class="logo" />
+      <span class="name">Empresas Públicas del Quindío EPQ</span>
     </div>
+  </header>
 
-    <!-- IMAGEN -->
-    <div class="image-box">
-      <div class="image-card">
-        <img
-          src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765379696/descarga_1_jgxs8e.jpg"
-          alt="Perfil">
+  <section class="auth-content">
+    <h1 class="auth-title">Inicio de sesión</h1>
+    <div class="section-divider"></div>
+
+    <div class="auth-grid">
+      <div class="auth-form">
+        <label for="user">Usuario:</label>
+        <input id="user" type="text" [(ngModel)]="username" placeholder="Ingresar usuario" />
+
+        <label for="pass">Contraseña:</label>
+        <div class="password-wrap">
+          <input
+            id="pass"
+            [type]="showPassword ? 'text' : 'password'"
+            [(ngModel)]="password"
+            placeholder="Ingresar contraseña"
+          />
+          <button type="button" class="eye" (click)="togglePassword()">👁</button>
+        </div>
+
+        <button class="signin" (click)="login()">Iniciar sesión</button>
+
+        <p class="register">
+          ¿No tienes una cuenta?
+          <a routerLink="/register">Regístrate aquí</a>
+        </p>
+      </div>
+
+       <div class="profile-card">
+        <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765379696/descarga_1_jgxs8e.jpg" alt="Perfil" />
       </div>
     </div>
 
-  </div>
-
+     </section>
 </div>

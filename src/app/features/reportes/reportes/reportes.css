@@ -1,0 +1,28 @@
+.reportes-content {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 30px 24px;
+}
+
+.reportes-content h1 {
+  font-size: 56px;
+  font-weight: 400;
+  margin: 26px 0 10px;
+}
+
+.reportes-content p {
+  font-size: 28px;
+}
+
+.reportes-content button {
+  border: 0;
+  border-radius: 999px;
+  background: #eceff4;
+  color: #2d5daa;
+  min-width: 220px;
+  height: 56px;
+  font-size: 22px;
+  cursor: pointer;
+  margin-top: 24px;
+}

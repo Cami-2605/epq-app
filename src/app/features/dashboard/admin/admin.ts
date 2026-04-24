@@ -63,7 +63,7 @@ export class AdminComponent {
   }
 
   goToUsuarios() {
-    alert('Módulo de usuarios en construcción');
+   this.router.navigate(['/dashboard-user']);
   }
 
   goToExcel() {
@@ -77,7 +77,7 @@ export class AdminComponent {
     return;
   }
 
-  if (!this.archivosSeleccionados) {
+  if (this.archivosSeleccionados.length === 0) {
     alert('Selecciona un archivo primero');
     return;
   }
