@@ -71,10 +71,10 @@
         <button
           type="button"
           *ngFor="let file of archivos"
-          (click)="toggleArchivo(file.nombreArchivo)"
-          [class.selected]="archivosSeleccionados.includes(file.nombreArchivo)"
+           (click)="toggleArchivo(getNombreArchivo(file))"
+          [class.selected]="archivoSeleccionado === getNombreArchivo(file)"
         >
-          {{ file.nombreArchivo }}
+          {{ getNombreArchivo(file) || 'Archivo sin nombre' }}
         </button>
       </div>
     </section>

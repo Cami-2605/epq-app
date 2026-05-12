@@ -17,7 +17,7 @@
   border: 0;
   background: transparent;
   color: #e7effb;
-  font-size: 48px;
+  font-size: clamp(18px, 2vw, 30px);
   cursor: pointer;
 }
 
@@ -36,7 +36,7 @@
 
 .admin-content h1 {
   margin: 26px 0 10px;
-  font-size: 56px;
+  font-size: clamp(26px, 2.7vw, 38px);
   font-weight: 400;
 }
 
@@ -51,19 +51,19 @@
   display: block;
   text-align: left;
   margin-bottom: 12px;
-  font-size: 50px;
+  font-size: clamp(15px, 1.3vw, 20px);
 }
 
 .field select,
 .field input {
   width: 100%;
-  height: 82px;
+  height: 64px;
   border: 0;
   border-radius: 999px;
   padding: 0 24px;
   background: var(--green);
   color: #e6f3d8;
-  font-size: 30px;
+  font-size: clamp(20px, 1.5vw, 26px);
 }
 
 .file-picker {
@@ -74,7 +74,7 @@
 .file-picker > label {
   display: block;
   text-align: left;
-  font-size: 40px;
+  font-size: clamp(22px, 2vw, 32px);
   margin-bottom: 10px;
 }
 
@@ -100,13 +100,13 @@
 }
 
 .generate-btn {
-  width: 420px;
-  height: 82px;
+  width: min(420px, 100%);
+  height: 68px;
   border-radius: 999px;
   border: 0;
   background: #eceff4;
   color: #2d5daa;
-  font-size: 52px;
+  font-size: clamp(28px, 2.5vw, 44px);
   cursor: pointer;
   margin-top: 18px;
 }

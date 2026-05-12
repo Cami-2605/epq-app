@@ -70,20 +70,20 @@ export class AdminComponent {
     this.router.navigate(['/excel']);
   }
 
-  generarReporte() {
+   async generarReporte() {
 
   if (!this.municipio || !this.tipoReporte || !this.tipoArchivo) {
     alert('Completa los campos obligatorios');
     return;
   }
 
-  if (this.archivosSeleccionados.length === 0) {
+  if (!this.archivoSeleccionado) {
     alert('Selecciona un archivo primero');
     return;
   }
 
   const body = {
-    nombreArchivo: this.archivosSeleccionados,
+    nombreArchivo: this.archivoSeleccionado,
     tipoFuente: 'extra',
 
     municipio: this.municipio,
@@ -94,16 +94,21 @@ export class AdminComponent {
     tipoArchivo: this.tipoArchivo.toLowerCase()
   };
 
-  fetch('http://localhost:8080/api/reportes/generar', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  })
-  .then(res => res.blob())
-  .then(blob => {
+  try {
+    const res = await fetch('http://localhost:8080/api/reportes/generar', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
 
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(errorText || `Error HTTP ${res.status}`);
+    }
+
+    const blob = await res.blob();
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
 
@@ -111,14 +116,16 @@ export class AdminComponent {
     a.download = `reporte.${this.tipoArchivo.toLowerCase()}`;
 
     a.click();
-  })
-  .catch(() => {
-    alert('Error generando reporte');
-  });
+
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Error generando reporte:', error);
+    alert('No se pudo generar el reporte. Verifica el archivo seleccionado y los filtros.');
+  }
   }
 
   archivos: any[] = [];
-  archivosSeleccionados: string[] = [];
+  archivoSeleccionado: string | null = null;
 
   ngOnInit() {
   fetch('http://localhost:8080/api/excel')
@@ -126,13 +133,18 @@ export class AdminComponent {
     .then(data => this.archivos = data);
   }
 
-  toggleArchivo(nombre: string) {
+    getNombreArchivo(file: any): string {
+    return file?.nombreArchivo ?? file?.name ?? '';
+  }
 
-  if (this.archivosSeleccionados.includes(nombre)) {
-    this.archivosSeleccionados =
-      this.archivosSeleccionados.filter(a => a !== nombre);
-    } else {
-      this.archivosSeleccionados.push(nombre);
+  toggleArchivo(nombre: string) {
+    if (!nombre) {
+      return;
+    } if (this.archivoSeleccionado === nombre) {
+      this.archivoSeleccionado = null;
+      return;
     }
+
+    this.archivoSeleccionado = nombre;
   }
 }
