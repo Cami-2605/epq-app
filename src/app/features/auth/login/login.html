@@ -13,7 +13,7 @@
     <div class="auth-grid">
       <div class="auth-form">
         <label for="user">Usuario:</label>
-        <input id="user" type="text" [(ngModel)]="username" placeholder="Ingresar usuario" />
+        <input id="user" type="text" [(ngModel)]="username" placeholder="Ingrese su usuario:" />
 
         <label for="pass">Contraseña:</label>
         <div class="password-wrap">
@@ -21,7 +21,7 @@
             id="pass"
             [type]="showPassword ? 'text' : 'password'"
             [(ngModel)]="password"
-            placeholder="Ingresar contraseña"
+            placeholder="Ingrese su contraseña:"
           />
           <button type="button" class="eye" (click)="togglePassword()">👁</button>
         </div>
@@ -38,6 +38,5 @@
         <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765379696/descarga_1_jgxs8e.jpg" alt="Perfil" />
       </div>
     </div>
-
      </section>
 </div>

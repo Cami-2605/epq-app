@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
   templateUrl: './reportes.html',
   styleUrls: ['./reportes.css']
 })
+
 export class ReportesComponent {
   constructor(private router: Router) {}
 

@@ -1,0 +1,66 @@
+<div class="page-shell">
+  <header class="top-bar">
+    <div class="brand">
+      <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" class="logo" alt="Logo EPQ">
+      <span class="name">Empresas Públicas del Quindío EPQ</span>
+    </div>
+    <div class="user-actions">
+      <div class="avatar" [style.backgroundImage]="'url(' + usuario.fotoPerfil + ')'"></div>
+      <span class="user-name">{{ usuario.username }}</span>
+      <button class="pill-btn" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button (click)="goToGenerador()">Generar Reporte</button>
+    <span class="sep"></span>
+    <button class="active">Mi Perfil</button>
+  </nav>
+
+  <main class="perfil-content">
+    <h1>Mi Perfil</h1>
+    <div class="section-divider"></div>
+
+    <div *ngIf="mensajeError" class="alert error">{{ mensajeError }}</div>
+    <div *ngIf="mensajeExito" class="alert success">{{ mensajeExito }}</div>
+
+    <div class="perfil-card">
+      <div class="foto-section">
+        <div class="foto-perfil">
+          <img [src]="fotoPreview || usuario.fotoPerfil || 'https://res.cloudinary.com/dmjww2gh5/image/upload/v1765379696/descarga_1_jgxs8e.jpg'" alt="Foto">
+        </div>
+        <div class="foto-actions">
+          <input type="file" #fileInput accept="image/*" (change)="onFotoSeleccionada($event)" style="display:none">
+          <button class="btn-outline" (click)="fileInput.click()">Seleccionar foto</button>
+          <button class="btn-primary" *ngIf="fotoSeleccionada" (click)="subirFoto()" [disabled]="loading">Subir foto</button>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div class="info-row"><label>Usuario:</label><span>{{ usuario.username }}</span></div>
+        <div class="info-row"><label>Rol:</label><span class="rol-badge" [class.admin]="usuario.rol === 'admin'">{{ usuario.rol === 'admin' ? 'Administrador' : 'Usuario' }}</span></div>
+
+        <div class="info-row" *ngIf="!editando">
+          <label>Nombre completo:</label><span>{{ usuario.nombreCompleto }}</span>
+          <button class="icon-btn edit" (click)="toggleEdit()">✎</button>
+        </div>
+        <div class="info-row" *ngIf="editando">
+          <label>Nombre completo:</label><input type="text" [(ngModel)]="usuario.nombreCompleto">
+        </div>
+
+        <div class="info-row" *ngIf="!editando"><label>Correo:</label><span>{{ usuario.correo }}</span></div>
+        <div class="info-row" *ngIf="editando"><label>Correo:</label><input type="email" [(ngModel)]="usuario.correo"></div>
+
+        <div class="info-row" *ngIf="!editando"><label>Teléfono:</label><span>{{ usuario.telefono || 'No registrado' }}</span></div>
+        <div class="info-row" *ngIf="editando"><label>Teléfono:</label><input type="tel" [(ngModel)]="usuario.telefono"></div>
+
+        <div class="info-row"><label>Cédula:</label><span>{{ usuario.cedula || 'No registrada' }}</span></div>
+
+        <div class="edit-actions" *ngIf="editando">
+          <button class="btn-primary" (click)="guardarPerfil()">Guardar cambios</button>
+          <button class="btn-outline" (click)="toggleEdit()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

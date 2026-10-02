@@ -10,8 +10,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './register.html',
   styleUrls: ['./register.css']
 })
-export class RegisterComponent {
 
+export class RegisterComponent {
   nombre = '';
   telefono = '';
   correo = '';
@@ -41,32 +41,27 @@ export class RegisterComponent {
   };
 
   reader.readAsDataURL(file);
-
-  // reinicia el input para permitir subir otra imagen
   event.target.value = '';
-
 }
 
   register() {
 
     if (!this.nombre || !this.username || !this.password) {
-      alert('Completa los campos obligatorios');
+      alert('Por favor, complete todos los campos obligatorios');
       return;
     }
 
     console.log({
-      nombre: this.nombre,
-      telefono: this.telefono,
-      correo: this.correo,
-      username: this.username,
-      password: this.password,
-      foto: this.selectedFile
+      Nombre: this.nombre,
+      Telefono: this.telefono,
+      Correo: this.correo,
+      Username: this.username,
+      Password: this.password,
+      Foto: this.selectedFile
     });
 
     alert('Registro exitoso');
 
     this.router.navigate(['/']);
-
   }
-
 }

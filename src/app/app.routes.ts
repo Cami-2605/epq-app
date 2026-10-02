@@ -15,5 +15,6 @@ export const routes: Routes = [
   { path: 'dashboard-admin', component: AdminComponent, canActivate: [authGuard] },
   { path: 'excel', component: UploadComponent, canActivate: [authGuard] },
   { path: 'reportes', component: ReportesComponent, canActivate: [authGuard] },
+  { path: 'perfil', loadComponent: () => import('./features/perfil/perfil').then(m => m.PerfilComponent), canActivate: [authGuard] },
   { path: '**', redirectTo: '' }
 ];

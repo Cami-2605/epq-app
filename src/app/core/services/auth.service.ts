@@ -1,1 +1,73 @@
-export { AuthService } from './auth';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { tap } from 'rxjs/operators';
+
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+  private apiUrl = 'http://localhost:8080/api';
+  private tokenKey = 'token';
+  private userKey = 'user';
+  private roleKey = 'role';
+  private currentUserSubject = new BehaviorSubject<any>(null);
+  public currentUser$ = this.currentUserSubject.asObservable();
+
+  constructor(private http: HttpClient) {
+    this.loadStoredUser();
+  }
+
+  private loadStoredUser(): void {
+    const token = this.getToken();
+    const user = localStorage.getItem(this.userKey);
+    if (token && user) {
+      this.currentUserSubject.next(JSON.parse(user));
+    }
+  }
+
+  login(username: string, password: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/login`, { username, password })
+      .pipe(
+        tap(response => {
+          console.log('Login response:', response);
+          if (response && (response as any).token) {
+            this.saveToken((response as any).token);
+            const user = { username: username };
+            localStorage.setItem(this.userKey, JSON.stringify(user));
+            this.currentUserSubject.next(user);
+            localStorage.setItem(this.roleKey, username === 'admin' ? 'admin' : 'user');
+          }
+        })
+      );
+  }
+
+  register(userData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/auth/registrar`, userData);
+  }
+
+  saveToken(token: string): void {
+    localStorage.setItem(this.tokenKey, token);
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
+  }
+
+  getRole(): string | null {
+    return localStorage.getItem(this.roleKey);
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.getToken();
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'admin';
+  }
+
+  logout(): void {
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.userKey);
+    localStorage.removeItem(this.roleKey);
+    this.currentUserSubject.next(null);
+  }
+}

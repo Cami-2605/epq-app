@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { AuthService } from '../../../core/services/auth';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -17,6 +17,7 @@ export class LoginComponent {
   username: string = '';
   password: string = '';
   showPassword: boolean = false;
+  errorMessage: string = '';
 
   constructor(
     private router: Router,
@@ -28,34 +29,24 @@ export class LoginComponent {
   }
 
   login() {
-
     if (!this.username || !this.password) {
-      alert('Completa los campos');
+      this.errorMessage = 'Por favor, complete todos los campos';
       return;
     }
 
-    this.auth.login({
-      username: this.username,
-      password: this.password
-    }).subscribe({
+    this.errorMessage = '';
+
+    this.auth.login(this.username, this.password).subscribe({
       next: (res: any) => {
+        console.log('Login exitoso:', res);
         const role = res?.role || (this.username === 'admin' ? 'admin' : 'user');
-
-        if (res?.token) {
-          this.auth.saveToken(res.token);
-        }
-
         localStorage.setItem('role', role);
         this.router.navigate([role === 'admin' ? '/dashboard-admin' : '/dashboard-user']);
       },
-      error: () => {
-        // fallback temporal si backend no está disponible
-        const role = this.username === 'admin' && this.password === '1234' ? 'admin' : 'user';
-        localStorage.setItem('role', role);
-        this.router.navigate([role === 'admin' ? '/dashboard-admin' : '/dashboard-user']);
+      error: (err) => {
+        console.error('Error de login:', err);
+        this.errorMessage = 'Su usuario o contraseña son incorrectos';
       }
     });
-
   }
-
 }
