@@ -1,49 +1,101 @@
 <div class="page-shell excel-page">
   <header class="top-bar">
+
+<div class="user-section">
+  <div class="avatar" [style.backgroundImage]="'url(' + usuarioFoto + ')'"></div>
+  <span class="user-name">Usuario</span>
+  <button class="pill-btn" (click)="goToPerfil()">Mi Perfil</button>
+  <button class="pill-btn" (click)="logout()">Cerrar sesión</button>
+</div>
     <div class="brand">
       <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" class="logo" alt="Logo EPQ" />
-      <span class="name">Empresas Publicas del Quindío EPQ</span>
+      <span class="name">Empresas Públicas del Quindío EPQ</span>
     </div>
-
     <div class="user-section">
-      <button class="pill-btn" (click)="logout()">Log out</button>
+      <span class="user-name">Usuario</span>
+      <button class="pill-btn" (click)="logout()">Cerrar sesión</button>
       <div class="avatar"></div>
     </div>
   </header>
 
-   <nav class="tabs">
-    <button class="active" (click)="goToExcel()">Excel reportes</button>
+  <nav class="tabs">
+    <button class="active" (click)="goToExcel()">Subir Excel</button>
     <span class="sep"></span>
-    <button (click)="goToUsuarios()">Usuarios</button>
+    <button (click)="goToGenerador()">Generar Reporte</button>
+    <span class="sep"></span>
+    <button (click)="goToUsuarios()">Gestionar Usuarios</button>
   </nav>
 
   <main class="excel-content">
-    <h1>Excel reportes</h1>
+    <h1>Cargar Archivo Excel</h1>
     <div class="section-divider"></div>
 
-   <section class="upload-row">
-      <input type="file" (change)="onFileSelected($event)" />
-      <button (click)="uploadFile()">Subir archivo</button>
+    <div *ngIf="mensajeError" class="alert error">{{ mensajeError }}</div>
+    <div *ngIf="mensajeExito" class="alert success">{{ mensajeExito }}</div>
+
+    <section class="upload-area">
+      <div class="upload-row">
+        <input 
+          id="fileInput"
+          type="file" 
+          accept=".pdf,.xlsx,.xls" 
+          multiple
+          (change)="onFileSelected($event)"
+          [disabled]="uploading"
+        />
+        <select [(ngModel)]="tipoFuente" [disabled]="uploading">
+          <option value="extra">Archivos Extra</option>
+          <option value="base">Archivos Base</option>
+        </select>
+        <button (click)="uploadFile()" [disabled]="selectedFiles.length === 0 || uploading">
+          {{ uploading ? 'Subiendo...' : (selectedFiles.length > 1 ? 'Subir archivos' : 'Subir archivo') }}
+        </button>
+      </div>
+      <ng-container *ngIf="selectedFiles.length > 0">
+        <p class="info-text" *ngIf="selectedFiles.length === 1">
+          📎 Archivo seleccionado: <strong>{{ selectedFiles[0].name }}</strong> ({{ formatPeso(selectedFiles[0].size) }})
+        </p>
+        <div class="info-text" *ngIf="selectedFiles.length > 1">
+          📎 {{ selectedFiles.length }} archivos seleccionados:
+          <ul>
+            <li *ngFor="let f of selectedFiles">{{ f.name }} ({{ formatPeso(f.size) }})</li>
+          </ul>
+        </div>
+      </ng-container>
     </section>
 
     <section class="table-box">
       <div class="table-header">
-        <span>Acción</span>
-        <span>Nombre documento</span>
-        <span>Id</span>
-        <span>Peso</span>
+        <span>Acciones</span>
+        <span>Nombre del archivo</span>
+        <span>Fecha carga</span>
+        <span>Registros</span>
+        <span>Estado</span>
       </div>
 
-      <div class="table-row" *ngFor="let file of files">
+      <div class="table-row" *ngFor="let file of archivos">
         <div class="actions">
-          <button class="view" (click)="viewFile(file)">👁</button>
-          <button class="delete" (click)="deleteFile(file)">✖</button>
-          <button class="edit" (click)="downloadFile(file)">✎</button>
+          <button class="view" (click)="verDetalle(file)" title="Ver detalles">👁</button>
+          <button class="delete" (click)="eliminarArchivo(file)" title="Eliminar">🗑️</button>
         </div>
+        <span class="filename">{{ file.nombreArchivo }}</span>
+        <span>{{ formatFecha(file.fechaCarga) }}</span>
+        <span>{{ file.registrosProcesados || 0 }}</span>
+        <span>
+          <span class="estado" [class.procesado]="file.estado === 'PROCESADO'" [class.error]="file.estado === 'ERROR'">
+            {{ file.estado || 'PROCESADO' }}
+          </span>
+        </span>
+      </div>
 
-       <span>{{ file.nombreArchivo || file.name || 'Documento' }}</span>
-        <span>{{ file.id || 'N/A' }}</span>
-        <span>{{ file.peso || file.size || 'N/A' }}</span>
+      <div *ngIf="archivos.length === 0 && !loading" class="empty-state">
+        <p>No hay archivos cargados</p>
+        <p class="info">Sube un archivo Excel para comenzar</p>
+      </div>
+
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando archivos</p>
       </div>
     </section>
   </main>
