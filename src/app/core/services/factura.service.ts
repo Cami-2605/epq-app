@@ -19,7 +19,7 @@ export class FacturaService {
 
   cargarMultiplesArchivos(archivos: File[], tipo: string = 'extra'): Observable<any> {
     const formData = new FormData();
-    archivos.forEach(archivo => formData.append('archivos[]', archivo));
+    archivos.forEach(archivo => formData.append('archivos', archivo));
     formData.append('tipo', tipo);
     return this.http.post(`${this.apiUrl}/facturas/cargar-multiple`, formData);
   }

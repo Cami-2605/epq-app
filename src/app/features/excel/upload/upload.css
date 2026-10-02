@@ -1,149 +1,324 @@
+/* ─── Tabs ───────────────────────────────────────────────── */
 .tabs {
   width: 100%;
   background: var(--blue-accent);
-  border-radius: 0 0 52px 52px;
+  border-radius: 0 0 24px 24px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 80px;
-  padding: 20px 10px;
+  gap: 36px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-soft);
 }
 
 .tabs button {
   border: 0;
   background: transparent;
   color: #e7effb;
-  font-size: 48px;
+  font-size: clamp(0.9rem, 1.5vw, 1.25rem);
+  font-weight: 600;
   cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
 }
 
+.tabs button:hover { opacity: 1; }
+
 .tabs .active {
-  font-weight: 700;
+  opacity: 1;
+  border-bottom: 3px solid var(--green);
+  padding-bottom: 5px;
 }
 
 .tabs .sep {
-  width: 2px;
-  height: 60px;
-  background: #bad0ea;
+  width: 1px;
+  height: 34px;
+  background: rgba(186, 208, 234, 0.5);
 }
 
+/* ─── Content ────────────────────────────────────────────── */
 .excel-content {
-  max-width: 1400px;
+  max-width: 1120px;
   margin: 0 auto;
   text-align: center;
-  padding: 20px 24px 50px;
+  padding: 28px 24px 48px;
 }
 
 .excel-content h1 {
-  font-size: 56px;
-  font-weight: 400;
-  margin: 26px 0 10px;
+  font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+  font-weight: 600;
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+}
+
+/* ─── Alerts ─────────────────────────────────────────────── */
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.alert.error {
+  background: rgba(244, 67, 54, 0.13);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: #ffcdd2;
+}
+
+.alert.success {
+  background: rgba(76, 175, 80, 0.13);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+  color: #c8e6c9;
+}
+
+/* ─── Upload area ────────────────────────────────────────── */
+.upload-area {
+  background: var(--blue-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .upload-row {
   display: flex;
   justify-content: center;
-  gap: 16px;
-  margin-bottom: 24px;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.upload-row input,
+.upload-row input[type="file"],
+.upload-row select {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: #d8e6f8;
+  cursor: pointer;
+  transition: border-color 0.18s;
+  outline: none;
+}
+
+.upload-row input[type="file"]:hover,
+.upload-row select:hover {
+  border-color: rgba(88, 169, 90, 0.5);
+}
+
+.upload-row select option { background: var(--blue-card); }
+
 .upload-row button {
-  border-radius: 999px;
-  border: 0;
-  height: 56px;
-  padding: 0 20px;
-  font-size: 22px;
-}
-
-.upload-row input {
-  background: #ebeff7;
-  color: #2f5fa8;
-}
-
-.upload-row button {
-  background: var(--green);
+  border-radius: 12px;
+  border: none;
+  min-height: 44px;
+  padding: 0 24px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #4caf50, var(--green));
   color: #fff;
   cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
 }
 
+.upload-row button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(76, 175, 80, 0.4);
+}
+
+.upload-row button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─── File info ──────────────────────────────────────────── */
+.info-text {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: left;
+}
+
+.info-text ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-text li {
+  font-size: 0.82rem;
+  color: #b0c4e0;
+}
+
+/* ─── Table ──────────────────────────────────────────────── */
 .table-box {
   background: var(--blue-card);
-  border-radius: 62px;
-  padding: 14px 14px 24px;
+  border-radius: var(--radius-lg);
+  padding: 4px 12px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: left;
 }
 
 .table-header,
 .table-row {
   display: grid;
-  grid-template-columns: 1.4fr 2fr 1fr 1fr;
+  grid-template-columns: 110px 1fr 160px 100px 120px;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 0 8px;
 }
 
 .table-header {
-  background: var(--green);
-  border-radius: 999px;
-  min-height: 74px;
-  font-size: 38px;
+  background: linear-gradient(90deg, var(--green), #4caf50);
+  border-radius: 12px;
+  min-height: 44px;
+  font-size: 0.82rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
 }
 
 .table-row {
-  min-height: 96px;
-  font-size: 32px;
+  min-height: 52px;
+  font-size: 0.87rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s;
 }
+
+.table-row:hover { background: rgba(255, 255, 255, 0.03); }
+.table-row:last-child { border-bottom: 0; }
 
 .actions {
   display: flex;
-  gap: 12px;
+  gap: 6px;
   justify-content: center;
 }
 
 .actions button {
-  border: 0;
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
 }
 
 .actions .view {
-  background: #d9dcc5;
+  background: rgba(209, 220, 197, 0.85);
+  color: #2d4a25;
 }
 
 .actions .delete {
-  background: #ff5c57;
+  background: rgba(255, 92, 87, 0.8);
+  color: #fff;
 }
 
-.actions .edit {
-  background: #f1da52;
+.actions .view:hover  { background: #d9dcc5; transform: scale(1.08); }
+.actions .delete:hover { background: #ff5c57; transform: scale(1.08); }
+
+.filename {
+  font-weight: 500;
+  word-break: break-word;
+  color: #dce8fc;
 }
 
-@media (max-width: 960px) {
-  .tabs {
-    border-radius: 0 0 18px 18px;
-    gap: 18px;
-  }
+/* ─── Estado badge ───────────────────────────────────────── */
+.estado {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
 
-  .tabs button,
-  .excel-content h1,
+.estado.procesado {
+  background: rgba(88, 169, 90, 0.18);
+  color: #a8e6a5;
+  border: 1px solid rgba(88, 169, 90, 0.35);
+}
+
+.estado.error {
+  background: rgba(255, 92, 87, 0.18);
+  color: #ffb3b0;
+  border: 1px solid rgba(255, 92, 87, 0.35);
+}
+
+/* ─── Empty / loading states ─────────────────────────────── */
+.empty-state {
+  text-align: center;
+  padding: 52px 20px;
+  color: var(--muted);
+}
+
+.empty-state .info {
+  font-size: 0.83rem;
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 36px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(88, 169, 90, 0.2);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 14px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── User header ────────────────────────────────────────── */
+.user-name {
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--blue-accent);
+  background: rgba(37, 87, 155, 0.12);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .tabs { border-radius: 0 0 16px 16px; gap: 16px; }
+
+  .upload-row { flex-direction: column; }
+  .upload-row input[type="file"],
+  .upload-row select,
+  .upload-row button { width: 100%; }
+
+  .table-box { overflow-x: auto; }
   .table-header,
-  .table-row {
-    font-size: 20px;
-  }
-
-  .upload-row {
-    flex-direction: column;
-  }
-
-  .table-box {
-    border-radius: 20px;
-    overflow-x: auto;
-  }
-
-  .table-header,
-  .table-row {
-    min-width: 700px;
-  }
+  .table-row { min-width: 640px; }
 }

@@ -1,118 +1,128 @@
+/* ─── Tabs ───────────────────────────────────────────────── */
 .tabs {
   width: 100%;
   background: var(--blue-accent);
-  border-radius: 0 0 52px 52px;
+  border-radius: 0 0 24px 24px;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 80px;
-  padding: 20px 10px;
+  gap: 36px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow-soft);
 }
 
 .tabs button {
   border: 0;
   background: transparent;
   color: #e7effb;
-  font-size: 48px;
+  font-size: clamp(0.9rem, 1.5vw, 1.25rem);
+  font-weight: 600;
   cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.2s;
 }
 
+.tabs button:hover { opacity: 1; }
+
 .tabs .active {
-  font-weight: 700;
+  opacity: 1;
+  border-bottom: 3px solid var(--green);
+  padding-bottom: 5px;
 }
 
 .tabs .sep {
-  width: 2px;
-  height: 60px;
-  background: #bad0ea;
+  width: 1px;
+  height: 34px;
+  background: rgba(186, 208, 234, 0.5);
 }
 
+/* ─── Content ────────────────────────────────────────────── */
 .users-content {
-  max-width: 1400px;
+  max-width: 1120px;
   margin: 0 auto;
   text-align: center;
-  padding: 20px 24px 50px;
+  padding: 28px 24px 48px;
 }
 
 .users-content h1 {
-  font-size: 56px;
-  font-weight: 400;
-  margin: 26px 0 10px;
+  font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+  font-weight: 600;
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
 }
 
+/* ─── Table ──────────────────────────────────────────────── */
 .table-box {
   background: var(--blue-card);
-  border-radius: 62px;
-  padding: 14px 14px 24px;
+  border-radius: var(--radius-lg);
+  padding: 4px 12px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: left;
 }
 
 .table-header,
 .table-row {
   display: grid;
-  grid-template-columns: 1.5fr 2fr 1.2fr 1.6fr 1.2fr;
+  grid-template-columns: 110px 1.4fr 1.2fr 1.8fr 1.2fr;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  padding: 0 8px;
 }
 
 .table-header {
-  background: var(--green);
-  border-radius: 999px;
-  min-height: 74px;
-  font-size: 38px;
+  background: linear-gradient(90deg, var(--green), #4caf50);
+  border-radius: 12px;
+  min-height: 44px;
+  font-size: 0.82rem;
   font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
 }
 
 .table-row {
-  min-height: 96px;
-  font-size: 28px;
+  min-height: 52px;
+  font-size: 0.87rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s;
 }
 
+.table-row:hover { background: rgba(255, 255, 255, 0.03); }
+.table-row:last-child { border-bottom: 0; }
+
+/* ─── Action buttons ─────────────────────────────────────── */
 .actions {
   display: flex;
-  gap: 12px;
+  gap: 6px;
   justify-content: center;
 }
 
 .actions button {
-  border: 0;
-  width: 46px;
-  height: 46px;
-  border-radius: 999px;
+  border: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
 }
 
-.actions .view {
-  background: #d9dcc5;
-}
+.actions .view  { background: rgba(209, 220, 197, 0.85); color: #2d4a25; }
+.actions .edit  { background: rgba(241, 218, 82, 0.85);  color: #5a4600; }
+.actions .delete{ background: rgba(255, 92, 87, 0.8);    color: #fff;    }
 
-.actions .delete {
-  background: #ff5c57;
-}
+.actions .view:hover   { background: #d9dcc5; transform: scale(1.08); }
+.actions .edit:hover   { background: #f1da52; transform: scale(1.08); }
+.actions .delete:hover { background: #ff5c57; transform: scale(1.08); }
 
-.actions .edit {
-  background: #f1da52;
-}
-
-@media (max-width: 960px) {
-  .tabs {
-    border-radius: 0 0 18px 18px;
-    gap: 18px;
-  }
-
-  .tabs button,
-  .users-content h1,
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .tabs { border-radius: 0 0 16px 16px; gap: 16px; }
+  .table-box { overflow-x: auto; }
   .table-header,
-  .table-row {
-    font-size: 20px;
-  }
-
-  .table-box {
-    border-radius: 20px;
-    overflow-x: auto;
-  }
-
-  .table-header,
-  .table-row {
-    min-width: 880px;
-  }
+  .table-row { min-width: 720px; }
 }

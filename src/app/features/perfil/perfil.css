@@ -1,0 +1,175 @@
+/* ─── Content ────────────────────────────────────────────── */
+.perfil-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 28px 24px 56px;
+}
+
+.perfil-content h1 {
+  text-align: center;
+  margin: 0 0 8px;
+  font-size: clamp(1.6rem, 2.4vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: -0.3px;
+}
+
+/* ─── Card ───────────────────────────────────────────────── */
+.perfil-card {
+  background: var(--blue-card);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 36px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Photo section ──────────────────────────────────────── */
+.foto-section { text-align: center; }
+
+.foto-perfil {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 16px;
+  border: 3px solid var(--green);
+  box-shadow: 0 4px 16px rgba(88, 169, 90, 0.3);
+}
+
+.foto-perfil img { width: 100%; height: 100%; object-fit: cover; }
+
+.foto-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+/* ─── Buttons ────────────────────────────────────────────── */
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--green);
+  color: var(--text-light);
+  padding: 8px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.87rem;
+  font-weight: 600;
+  transition: all 0.18s;
+}
+
+.btn-outline:hover {
+  background: rgba(88, 169, 90, 0.15);
+  border-color: #6dc96f;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #4caf50, var(--green));
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: none;
+  font-size: 0.87rem;
+  font-weight: 700;
+  transition: all 0.18s;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(88, 169, 90, 0.4);
+}
+
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ─── Info section ───────────────────────────────────────── */
+.info-section { display: flex; flex-direction: column; gap: 4px; }
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.info-row:last-child { border-bottom: none; }
+
+.info-row label {
+  width: 150px;
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.info-row span { flex: 1; font-size: 0.92rem; }
+
+.info-row input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 9px 16px;
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.18s, background 0.18s;
+}
+
+.info-row input:focus {
+  border-color: var(--green);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 8px;
+  transition: background 0.15s;
+  color: var(--muted);
+}
+
+.icon-btn.edit:hover { background: rgba(88, 169, 90, 0.25); color: #a8e6a5; }
+
+/* ─── Role badge ─────────────────────────────────────────── */
+.rol-badge {
+  display: inline-block;
+  padding: 3px 12px;
+  border-radius: 40px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.rol-badge.admin {
+  background: rgba(33, 150, 243, 0.18);
+  color: #90caf9;
+  border: 1px solid rgba(33, 150, 243, 0.35);
+}
+
+/* ─── Edit actions ───────────────────────────────────────── */
+.edit-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .perfil-card {
+    grid-template-columns: 1fr;
+    padding: 24px 16px;
+  }
+
+  .info-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .info-row label { width: auto; }
+  .info-row input, .info-row span { width: 100%; }
+}

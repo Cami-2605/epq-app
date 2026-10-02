@@ -2,83 +2,239 @@
   <header class="top-bar">
     <div class="brand">
       <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" alt="Logo EPQ" class="logo" />
-      <span class="name">Empresas Publicas del Quindío EPQ</span>
+      <span class="name">Empresas Públicas del Quindío EPQ</span>
     </div>
-
-     <div class="user-actions">
-      <button class="pill-btn" (click)="logout()">Log out</button>
-      <div class="avatar"></div>
+    <div class="user-actions">
+      <div class="avatar" [style.backgroundImage]="'url(' + usuarioFoto + ')'"></div>
+      <button class="pill-btn" (click)="goToPerfil()">Mi Perfil</button>
+      <button class="pill-btn" (click)="logout()">Cerrar sesión</button>
     </div>
   </header>
 
   <nav class="tabs">
-    <button (click)="goToExcel()">Excel reportes</button>
+    <button (click)="goToExcel()">📊 Subir Excel</button>
     <span class="sep"></span>
-    <button (click)="goToUsuarios()">Usuarios</button>
+    <button class="active">📈 Generar Reporte</button>
+    <span class="sep"></span>
+    <button (click)="goToUsuarios()">👥 Usuarios</button>
   </nav>
 
   <main class="admin-content">
-    <h1>Reportes</h1>
+    <h1>Generador de Reportes</h1>
     <div class="section-divider"></div>
 
-     <section class="form-grid">
-      <div class="field">
-        <label>Seleccione el municipio:</label>
-        <select [(ngModel)]="municipio">
-          <option value="" disabled selected>Seleccione</option>
-          <option *ngFor="let m of municipios" [value]="m">{{ m }}</option>
-        </select>
+    <div *ngIf="error" class="alert error" role="alert">⚠ {{ error }}</div>
+    <div *ngIf="success" class="alert success" role="status">✔ {{ success }}</div>
+    <div *ngIf="loading" class="alert info" role="status">
+      <span class="spinner-inline"></span> Generando reporte, por favor espere…
+    </div>
+
+    <!-- Archivo fuente principal -->
+    <div class="card">
+      <div class="card-header">📁 Archivo fuente principal</div>
+      <div class="card-body">
+        <div class="chips" *ngIf="archivosExcel.length > 0; else noArchivos">
+          <button
+            *ngFor="let file of archivosExcel"
+            type="button"
+            (click)="seleccionarArchivo(file)"
+            [class.selected]="archivoSeleccionado === file"
+            [title]="getNombreArchivo(file)"
+          >
+            {{ getNombreArchivo(file) }} <span class="chip-tag">{{ file.tipo || 'extra' }}</span>
+          </button>
+        </div>
+        <ng-template #noArchivos>
+          <div class="empty-state">
+            <p>No hay archivos cargados.</p>
+            <button class="small-btn" (click)="goToExcel()">Ir a Subir Excel →</button>
+          </div>
+        </ng-template>
       </div>
-      
-      <div class="field">
-        <label>Seleccione el periodo:</label>
-        <select [(ngModel)]="periodo">
-           <option value="" disabled selected>Seleccione</option>
-          <option *ngFor="let p of periodos" [value]="p">{{ p }}</option>
-        </select>
+    </div>
+
+    <!-- Múltiples archivos fuente -->
+    <div class="card collapsible">
+      <div class="card-header">📂 Filtrar por múltiples archivos <span class="badge" *ngIf="archivosSeleccionados.length > 0">{{ archivosSeleccionados.length }}</span></div>
+      <div class="card-body">
+        <p class="helper-text">Selecciona archivos adicionales para incluir en el reporte. Si no se selecciona ninguno, se usará el archivo principal de arriba.</p>
+        <div class="chips" *ngIf="archivosExcel.length > 0">
+          <button
+            *ngFor="let file of archivosExcel"
+            type="button"
+            (click)="toggleArchivoFiltro(file)"
+            [class.selected]="archivosSeleccionados.includes(getNombreArchivo(file))"
+            [title]="getNombreArchivo(file)"
+          >
+            {{ getNombreArchivo(file) }} <span class="chip-tag">{{ file.tipo || 'extra' }}</span>
+          </button>
+        </div>
+        <p class="helper-text" *ngIf="archivosExcel.length === 0">Sin archivos disponibles.</p>
+      </div>
+    </div>
+
+    <div class="filters-grid">
+      <!-- Municipios -->
+      <div class="field full-width">
+        <label>🏙 Municipios</label>
+        <div class="button-group">
+          <button class="small-btn" (click)="seleccionarTodosMunicipios()">Seleccionar todos</button>
+          <button class="small-btn" (click)="limpiarMunicipios()">Limpiar</button>
+        </div>
+        <div class="municipios-list">
+          <label *ngFor="let m of municipiosDisponibles" class="checkbox-label">
+            <input type="checkbox" [checked]="municipiosSeleccionados.includes(m)" (change)="toggleMunicipio(m)">
+            {{ m }}
+          </label>
+          <div class="empty-hint" *ngIf="municipiosDisponibles.length === 0">Sin datos disponibles</div>
+        </div>
       </div>
 
-       <div class="field">
-        <label>Desde:</label>
+      <!-- Fechas -->
+      <div class="field">
+        <label>📅 Desde</label>
         <input type="date" [(ngModel)]="fechaInicio" />
       </div>
-
       <div class="field">
-        <label>Hasta:</label>
+        <label>📅 Hasta</label>
         <input type="date" [(ngModel)]="fechaFin" />
       </div>
 
+      <!-- Estrato único (legacy) -->
       <div class="field">
-        <label>Tipo de reporte:</label>
-        <select [(ngModel)]="tipoReporte">
-          <option value="" disabled selected>Seleccione</option>
-          <option *ngFor="let tipo of tiposReporte" [value]="tipo">{{ tipo }}</option>
+        <label>🏠 Estrato (único)</label>
+        <select [(ngModel)]="estrato">
+          <option [ngValue]="null">Todos los estratos</option>
+          <option *ngFor="let e of [1,2,3,4,5,6]" [ngValue]="e">Estrato {{ e }}</option>
+        </select>
+      </div>
+
+      <!-- Múltiples estratos -->
+      <div class="field">
+        <label>🏠 Estratos múltiples <span class="badge" *ngIf="estratosSeleccionados.length > 0">{{ estratosSeleccionados.length }}</span></label>
+        <div class="checkbox-row">
+          <label *ngFor="let e of [1,2,3,4,5,6]" class="checkbox-label compact">
+            <input type="checkbox" [checked]="estratosSeleccionados.includes(e)" (change)="toggleEstrato(e)">
+            {{ e }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Meses de referencia -->
+      <div class="field full-width" *ngIf="mesesDisponibles.length > 0">
+        <label>📆 Meses de referencia <span class="badge" *ngIf="mesesSeleccionados.length > 0">{{ mesesSeleccionados.length }}</span></label>
+        <div class="municipios-list">
+          <label *ngFor="let mes of mesesDisponibles" class="checkbox-label">
+            <input type="checkbox" [checked]="mesesSeleccionados.includes(mes)" (change)="toggleMes(mes)">
+            {{ mes }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Ordenamiento -->
+      <div class="field">
+        <label>↕ Ordenar por</label>
+        <select [(ngModel)]="ordenarPor">
+          <option value="fecha">Fecha</option>
+          <option value="valor">Valor de factura</option>
+          <option value="municipio">Municipio</option>
         </select>
       </div>
 
       <div class="field">
-        <label>Tipo de archivo:</label>
-        <select [(ngModel)]="tipoArchivo">
-           <option value="" disabled selected>Seleccione</option>
-          <option *ngFor="let ext of tiposArchivo" [value]="ext">{{ ext }}</option>
+        <label>↕ Dirección</label>
+        <select [(ngModel)]="ordenDireccion">
+          <option value="DESC">Descendente (mayor a menor)</option>
+          <option value="ASC">Ascendente (menor a mayor)</option>
         </select>
       </div>
-    </section>
 
-    <section class="file-picker">
-      <label>Archivos Excel:</label>
-      <div class="chips">
-        <button
-          type="button"
-          *ngFor="let file of archivos"
-           (click)="toggleArchivo(getNombreArchivo(file))"
-          [class.selected]="archivoSeleccionado === getNombreArchivo(file)"
-        >
-          {{ getNombreArchivo(file) || 'Archivo sin nombre' }}
-        </button>
+      <!-- Opciones generales -->
+      <div class="field full-width">
+        <label>⚙ Opciones generales</label>
+        <div class="options-row">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="soloMorosos"> Solo morosos
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="agruparPorMunicipio"> Agrupar por municipio
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="agruparPorMes"> Agrupar por mes
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="agruparPorEstrato"> Agrupar por estrato
+          </label>
+        </div>
       </div>
-    </section>
 
-    <button class="generate-btn" (click)="generarReporte()">Generar reporte</button>
+      <!-- Reportes avanzados -->
+      <div class="field full-width">
+        <label>📊 Secciones del reporte</label>
+        <div class="options-row">
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="mostrarDetallePorVivienda"> Detalle por vivienda
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="mostrarTotalesPorEstrato"> Totales por estrato
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" [(ngModel)]="mostrarTotalesPorMunicipio"> Totales por municipio
+          </label>
+        </div>
+      </div>
+
+      <!-- Formato de salida -->
+      <div class="field">
+        <label>📄 Formato de salida</label>
+        <div class="options-row">
+          <label class="radio-label" [class.selected]="tipoArchivo === 'excel'">
+            <input type="radio" value="excel" [(ngModel)]="tipoArchivo"> Excel
+          </label>
+          <label class="radio-label" [class.selected]="tipoArchivo === 'pdf'">
+            <input type="radio" value="pdf" [(ngModel)]="tipoArchivo"> PDF
+          </label>
+        </div>
+      </div>
+
+      <!-- Tipo de fuente -->
+      <div class="field">
+        <label>🗂 Tipo de fuente</label>
+        <div class="options-row">
+          <label class="radio-label" [class.selected]="tipoFuente === 'base'">
+            <input type="radio" value="base" [(ngModel)]="tipoFuente"> Base
+          </label>
+          <label class="radio-label" [class.selected]="tipoFuente === 'extra'">
+            <input type="radio" value="extra" [(ngModel)]="tipoFuente"> Extra
+          </label>
+        </div>
+      </div>
+
+      <!-- Descargar ambos formatos -->
+      <div class="field full-width">
+        <div class="ambos-card" [class.active]="ambosFormatos">
+          <label class="checkbox-label ambos-label">
+            <input type="checkbox" [(ngModel)]="ambosFormatos">
+            <span>
+              <strong>Descargar ambos formatos (ZIP)</strong>
+              <small>Genera Excel y PDF en un solo archivo comprimido</small>
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button
+      class="generate-btn"
+      (click)="generarReporte()"
+      [disabled]="loading || (archivosExcel.length === 0 && archivosSeleccionados.length === 0)"
+    >
+      <span *ngIf="!loading">
+        {{ ambosFormatos ? '📦 Generar ZIP (Excel + PDF)' : (tipoArchivo === 'pdf' ? '📄 Generar PDF' : '📊 Generar Excel') }}
+      </span>
+      <span *ngIf="loading" class="btn-loading">
+        <span class="spinner-inline"></span> Generando…
+      </span>
+    </button>
   </main>
 </div>
