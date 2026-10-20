@@ -1,15 +1,13 @@
 <div class="page-shell excel-page">
   <header class="top-bar">
-
-<div class="user-section">
-  <div class="avatar" [style.backgroundImage]="'url(' + usuarioFoto + ')'"></div>
-  <span class="user-name">Usuario</span>
-  <button class="pill-btn" (click)="goToPerfil()">Mi Perfil</button>
-  <button class="pill-btn" (click)="logout()">Cerrar sesión</button>
-</div>
     <div class="brand">
       <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" class="logo" alt="Logo EPQ" />
       <span class="name">Empresas Públicas del Quindío EPQ</span>
+    </div>
+    <div class="user-actions">
+      <div class="avatar" [style.backgroundImage]="'url(' + usuarioFoto + ')'"></div>
+      <button class="pill-btn" (click)="goToPerfil()">Mi Perfil</button>
+      <button class="pill-btn" (click)="logout()">Cerrar sesión</button>
     </div>
   </header>
 
@@ -17,8 +15,6 @@
     <button class="active" (click)="goToExcel()">Subir Excel</button>
     <span class="sep"></span>
     <button (click)="goToGenerador()">Generar Reporte</button>
-    <span class="sep"></span>
-    <button (click)="goToUsuarios()">Gestionar Usuarios</button>
   </nav>
 
   <main class="excel-content">

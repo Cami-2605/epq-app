@@ -293,22 +293,6 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ─── User header ────────────────────────────────────────── */
-.user-name {
-  font-size: 0.83rem;
-  font-weight: 500;
-  color: var(--blue-accent);
-  background: rgba(37, 87, 155, 0.12);
-  padding: 5px 12px;
-  border-radius: 20px;
-}
-
-.user-section {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 /* ─── Responsive ─────────────────────────────────────────── */
 @media (max-width: 900px) {
   .tabs { border-radius: 0 0 16px 16px; gap: 16px; }

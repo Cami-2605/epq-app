@@ -6,44 +6,24 @@
     </div>
     <div class="user-actions">
       <div class="avatar" [style.backgroundImage]="'url(' + usuarioFoto + ')'"></div>
-      <span class="user-name">Usuario</span>
       <button class="pill-btn" (click)="goToPerfil()">Mi Perfil</button>
       <button class="pill-btn" (click)="logout()">Cerrar sesión</button>
     </div>
   </header>
 
   <nav class="tabs">
-    <button (click)="goToExcel()">📊 Subir Excel</button>
+    <button (click)="goToExcel()">Subir Excel</button>
     <span class="sep"></span>
-    <button (click)="goToGenerador()">📈 Generar Reporte</button>
-    <span class="sep"></span>
-    <button class="active">👥 Gestionar Usuarios</button>
+    <button class="active" (click)="goToGenerador()">Generar Reporte</button>
   </nav>
 
   <main class="users-content">
-    <h1>Gestión de Usuarios</h1>
+    <h1>Generador de Reportes</h1>
     <div class="section-divider"></div>
 
-    <section class="table-box">
-      <div class="table-header">
-        <span>Acción</span>
-        <span>Nombre</span>
-        <span>Cédula</span>
-        <span>Correo</span>
-        <span>Teléfono</span>
-      </div>
-
-      <div class="table-row" *ngFor="let user of users">
-        <div class="actions">
-          <button class="view" (click)="view(user)" title="Ver">👁</button>
-          <button class="edit" (click)="edit(user)" title="Editar">✎</button>
-          <button class="delete" (click)="remove(user)" title="Eliminar">🗑️</button>
-        </div>
-        <span>{{ user.nombre }}</span>
-        <span>{{ user.cedula }}</span>
-        <span>{{ user.correo }}</span>
-        <span>{{ user.telefono }}</span>
-      </div>
-    </section>
+    <div class="welcome-card">
+      <p>Accede al generador de reportes para crear y descargar tus archivos.</p>
+      <button class="generate-btn" (click)="goToGenerador()">Ir al Generador →</button>
+    </div>
   </main>
 </div>

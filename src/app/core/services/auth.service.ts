@@ -24,7 +24,8 @@ export class AuthService {
     }
   }
 
-  login(username: string, password: string): Observable<any> {
+    login(username: string, password: string): Observable<any> {
+    // Volvemos a enviar JSON puro
     return this.http.post(`${this.apiUrl}/auth/login`, { username, password })
       .pipe(
         tap(response => {

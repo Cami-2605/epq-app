@@ -12,11 +12,11 @@
   </header>
 
   <nav class="tabs">
-    <button (click)="goToExcel()">📊 Subir Excel</button>
+    <button (click)="goToExcel()">Subir Excel</button>
     <span class="sep"></span>
-    <button class="active">📈 Generar Reporte</button>
+    <button class="active">Generar Reporte</button>
     <span class="sep"></span>
-    <button (click)="goToUsuarios()">👥 Usuarios</button>
+    <button (click)="goToUsuarios()">Usuarios</button>
   </nav>
 
   <main class="admin-content">
@@ -31,7 +31,7 @@
 
     <!-- Archivo fuente principal -->
     <div class="card">
-      <div class="card-header">📁 Archivo fuente principal</div>
+      <div class="card-header">Archivo fuente principal</div>
       <div class="card-body">
         <div class="chips" *ngIf="archivosExcel.length > 0; else noArchivos">
           <button
@@ -55,7 +55,7 @@
 
     <!-- Múltiples archivos fuente -->
     <div class="card collapsible">
-      <div class="card-header">📂 Filtrar por múltiples archivos <span class="badge" *ngIf="archivosSeleccionados.length > 0">{{ archivosSeleccionados.length }}</span></div>
+      <div class="card-header">Filtrar por múltiples archivos <span class="badge" *ngIf="archivosSeleccionados.length > 0">{{ archivosSeleccionados.length }}</span></div>
       <div class="card-body">
         <p class="helper-text">Selecciona archivos adicionales para incluir en el reporte. Si no se selecciona ninguno, se usará el archivo principal de arriba.</p>
         <div class="chips" *ngIf="archivosExcel.length > 0">
@@ -76,7 +76,7 @@
     <div class="filters-grid">
       <!-- Municipios -->
       <div class="field full-width">
-        <label>🏙 Municipios</label>
+        <label>Municipios</label>
         <div class="button-group">
           <button class="small-btn" (click)="seleccionarTodosMunicipios()">Seleccionar todos</button>
           <button class="small-btn" (click)="limpiarMunicipios()">Limpiar</button>
@@ -92,17 +92,17 @@
 
       <!-- Fechas -->
       <div class="field">
-        <label>📅 Desde</label>
+        <label>Desde</label>
         <input type="date" [(ngModel)]="fechaInicio" />
       </div>
       <div class="field">
-        <label>📅 Hasta</label>
+        <label>Hasta</label>
         <input type="date" [(ngModel)]="fechaFin" />
       </div>
 
       <!-- Estrato único (legacy) -->
       <div class="field">
-        <label>🏠 Estrato (único)</label>
+        <label>Estrato (único)</label>
         <select [(ngModel)]="estrato">
           <option [ngValue]="null">Todos los estratos</option>
           <option *ngFor="let e of [1,2,3,4,5,6]" [ngValue]="e">Estrato {{ e }}</option>
@@ -111,7 +111,7 @@
 
       <!-- Múltiples estratos -->
       <div class="field">
-        <label>🏠 Estratos múltiples <span class="badge" *ngIf="estratosSeleccionados.length > 0">{{ estratosSeleccionados.length }}</span></label>
+        <label>Estratos múltiples <span class="badge" *ngIf="estratosSeleccionados.length > 0">{{ estratosSeleccionados.length }}</span></label>
         <div class="checkbox-row">
           <label *ngFor="let e of [1,2,3,4,5,6]" class="checkbox-label compact">
             <input type="checkbox" [checked]="estratosSeleccionados.includes(e)" (change)="toggleEstrato(e)">
@@ -122,7 +122,7 @@
 
       <!-- Meses de referencia -->
       <div class="field full-width" *ngIf="mesesDisponibles.length > 0">
-        <label>📆 Meses de referencia <span class="badge" *ngIf="mesesSeleccionados.length > 0">{{ mesesSeleccionados.length }}</span></label>
+        <label>Meses de referencia <span class="badge" *ngIf="mesesSeleccionados.length > 0">{{ mesesSeleccionados.length }}</span></label>
         <div class="municipios-list">
           <label *ngFor="let mes of mesesDisponibles" class="checkbox-label">
             <input type="checkbox" [checked]="mesesSeleccionados.includes(mes)" (change)="toggleMes(mes)">
@@ -170,7 +170,7 @@
 
       <!-- Reportes avanzados -->
       <div class="field full-width">
-        <label>📊 Secciones del reporte</label>
+        <label>Secciones del reporte</label>
         <div class="options-row">
           <label class="checkbox-label">
             <input type="checkbox" [(ngModel)]="mostrarDetallePorVivienda"> Detalle por vivienda
@@ -186,7 +186,7 @@
 
       <!-- Formato de salida -->
       <div class="field">
-        <label>📄 Formato de salida</label>
+        <label>Formato de salida</label>
         <div class="options-row">
           <label class="radio-label" [class.selected]="tipoArchivo === 'excel'">
             <input type="radio" value="excel" [(ngModel)]="tipoArchivo"> Excel
@@ -199,7 +199,7 @@
 
       <!-- Tipo de fuente -->
       <div class="field">
-        <label>🗂 Tipo de fuente</label>
+        <label>Tipo de fuente</label>
         <div class="options-row">
           <label class="radio-label" [class.selected]="tipoFuente === 'base'">
             <input type="radio" value="base" [(ngModel)]="tipoFuente"> Base
@@ -230,7 +230,7 @@
       [disabled]="loading || (archivosExcel.length === 0 && archivosSeleccionados.length === 0)"
     >
       <span *ngIf="!loading">
-        {{ ambosFormatos ? '📦 Generar ZIP (Excel + PDF)' : (tipoArchivo === 'pdf' ? '📄 Generar PDF' : '📊 Generar Excel') }}
+        {{ ambosFormatos ? 'Generar ZIP (Excel + PDF)' : (tipoArchivo === 'pdf' ? 'Generar PDF' : 'Generar Excel') }}
       </span>
       <span *ngIf="loading" class="btn-loading">
         <span class="spinner-inline"></span> Generando…
