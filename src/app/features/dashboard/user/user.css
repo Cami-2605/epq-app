@@ -51,74 +51,6 @@
   letter-spacing: -0.3px;
 }
 
-/* ─── Table ──────────────────────────────────────────────── */
-.table-box {
-  background: var(--blue-card);
-  border-radius: var(--radius-lg);
-  padding: 4px 12px 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  text-align: left;
-}
-
-.table-header,
-.table-row {
-  display: grid;
-  grid-template-columns: 110px 1.4fr 1.2fr 1.8fr 1.2fr;
-  align-items: center;
-  gap: 12px;
-  padding: 0 8px;
-}
-
-.table-header {
-  background: linear-gradient(90deg, var(--green), #4caf50);
-  border-radius: 12px;
-  min-height: 44px;
-  font-size: 0.82rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  margin-bottom: 4px;
-}
-
-.table-row {
-  min-height: 52px;
-  font-size: 0.87rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  transition: background 0.15s;
-}
-
-.table-row:hover { background: rgba(255, 255, 255, 0.03); }
-.table-row:last-child { border-bottom: 0; }
-
-/* ─── Action buttons ─────────────────────────────────────── */
-.actions {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-}
-
-.actions button {
-  border: none;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.15s;
-}
-
-.actions .view  { background: rgba(209, 220, 197, 0.85); color: #2d4a25; }
-.actions .edit  { background: rgba(241, 218, 82, 0.85);  color: #5a4600; }
-.actions .delete{ background: rgba(255, 92, 87, 0.8);    color: #fff;    }
-
-.actions .view:hover   { background: #d9dcc5; transform: scale(1.08); }
-.actions .edit:hover   { background: #f1da52; transform: scale(1.08); }
-.actions .delete:hover { background: #ff5c57; transform: scale(1.08); }
-
 /* ─── Welcome card ───────────────────────────────────────── */
 .welcome-card {
   background: var(--blue-card);
@@ -155,16 +87,7 @@
   box-shadow: 0 8px 24px rgba(76, 175, 80, 0.4);
 }
 
-
-  .tabs { border-radius: 0 0 16px 16px; gap: 16px; }
-  .table-box { overflow-x: auto; }
-  .table-header,
-  .table-row { min-width: 720px; }
-}
 /* ─── Responsive ─────────────────────────────────────────── */
 @media (max-width: 900px) {
   .tabs { border-radius: 0 0 16px 16px; gap: 16px; }
-  .table-box { overflow-x: auto; }
-  .table-header,
-  .table-row { min-width: 720px; }
 }

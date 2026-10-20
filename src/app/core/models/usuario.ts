@@ -1,13 +1,13 @@
+// Refleja el UsuarioDto del backend
 export interface Usuario {
   id: number;
   username: string;
   nombreCompleto: string;
-  email: string;
-  correo?: string;
+  correo: string;
   telefono: string;
   cedula: string;
-  roles: string[];
-  activo: boolean;
+  fotoPerfil?: string;
+  rol: string; // 'admin' | 'user'
 }
 
 export interface LoginRequest {

@@ -68,7 +68,7 @@ export class AdminComponent implements OnInit {
 
   cargarFotoUsuario(): void {
     this.usuarioService.getPerfil().subscribe({
-      next: (user) => this.usuarioFoto = user.fotoPerfil,
+      next: (user) => this.usuarioFoto = user.fotoPerfil ?? '',
       error: () => {}
     });
   }

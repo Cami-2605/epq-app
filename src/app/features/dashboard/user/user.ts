@@ -34,13 +34,13 @@ export class UserComponent implements OnInit {
 
   cargarFotoUsuario(): void {
     this.usuarioService.getPerfil().subscribe({
-      next: (user) => this.usuarioFoto = user.fotoPerfil,
+      next: (user) => this.usuarioFoto = user.fotoPerfil ?? '',
       error: () => {}
     });
   }
 
   logout() {
-    localStorage.removeItem('role');
+    this.authService.logout();
     this.router.navigate(['/']);
   }
 

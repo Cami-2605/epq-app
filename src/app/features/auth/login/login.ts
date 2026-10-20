@@ -37,10 +37,10 @@ export class LoginComponent {
     this.errorMessage = '';
 
     this.auth.login(this.username, this.password).subscribe({
-      next: (res: any) => {
-        console.log('Login exitoso:', res);
-        const role = res?.role || (this.username === 'admin' ? 'admin' : 'user');
-        localStorage.setItem('role', role);
+      next: (perfil: any) => {
+        console.log('Login exitoso, perfil:', perfil);
+        // auth.service ya guardó el token y el rol en localStorage
+        const role = this.auth.getRole() || 'user';
         this.router.navigate([role === 'admin' ? '/dashboard-admin' : '/dashboard-user']);
       },
       error: (err) => {

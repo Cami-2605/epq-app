@@ -31,3 +31,20 @@ export interface ArchivoExcel {
   errores: string;
   estado: string;
 }
+
+export interface ResultadoCargaItem {
+  nombreArchivo: string;
+  tipoArchivo: string;
+  registrosProcesados: number;
+  registrosFallidos: number;
+  estado: string;
+  errores: string[];
+}
+
+export interface ResultadoCarga {
+  archivos: ResultadoCargaItem[];
+  totalRegistrosProcesados: number;
+  totalRegistrosFallidos: number;
+  archivosConError: number;
+  mensaje: string;
+}

@@ -1,86 +1,128 @@
-# Implementation Plan — Adaptar frontend Angular al backend actualizado
+# Implementation Plan — Sincronización Frontend ↔ Backend
 
-## Contexto descubierto durante exploración
+## Resumen de hallazgos
 
-- `perfil.ts` importa `Usuario` desde `usuario.service.ts` (no desde `models/usuario.ts`) y usa `correo`.  
-  La interfaz en `usuario.service.ts` ya tiene `correo: string`. La interfaz en `models/usuario.ts` tiene `email: string` pero **nadie la usa en los templates**.  
-  → Para `models/usuario.ts`: agregar `correo?: string` junto a `email` (compatibilidad), ya que el campo `email` no aparece en ningún template leído.
+Tras leer todos los archivos indicados y los componentes que los consumen, el estado actual es:
 
-- `reporte.service.ts` existe y apunta a `/reportes/generar` (endpoint incorrecto). Debe actualizarse.
-
-- `factura.service.ts` necesita `import { HttpParams } from '@angular/common/http'` para los métodos con query params opcionales.
-
-- `upload.ts` usa el tipo `ArchivoExcel` definido localmente (no el del modelo), cosa que no hay que cambiar — son diferentes definiciones con el mismo nombre.
+| Archivo | Estado real encontrado |
+|---|---|
+| `usuario.ts` | **Ya está correcto.** `correo`, `rol: string`, sin `activo`. El campo `fotoPerfil` es `string` (no opcional), lo que causa riesgo cuando el backend devuelve `null`. |
+| `auth.service.ts` | **Ya está correcto.** El método `login()` usa `switchMap` para llamar a `/usuarios/perfil` y leer `perfil.rol`. No hay lógica hardcodeada. `isAuthenticated()` usa `getToken()`. |
+| `auth-guard.ts` | **Ya está correcto.** Usa `AuthService.isAuthenticated()` directamente. |
+| `factura.service.ts` | **Ya está completo.** `getArchivosExcel(tipo?)` envía query param; `eliminarArchivoExcel(nombre, tipoFuente?)` envía query param. No hay alias `getTotalesEstrato`/`getTotalesMunicipio` usados en ningún componente. |
+| `filtro-reporte.ts` | **Completo.** `agruparPorEstrato` y `ambosFormatos` presentes. |
+| `reporte.service.ts` | **Nadie lo importa.** Ningún componente lo usa (todos llaman directamente a `FacturaService`). Puede eliminarse sin romper nada. |
+| `usuario.service.ts` | **Sin duplicado real.** Hace `import { Usuario } from '../models/usuario'` y re-exporta con `export type { Usuario }`. No hay doble definición. |
 
 ---
 
-## Pasos (ordenados por dependencia: modelos → servicios → componentes)
+## Cambios reales a realizar
 
-- [ ] 1. Actualizar la interfaz `Factura` en el modelo
-      Agregar los dos campos nuevos que devuelve el backend: `saldoMora: number` y `tipoArchivoOrigen: string`.
-      Archivo: `src/app/core/models/factura.ts`
-      Verificar: `npx ng build --configuration development` — sin errores TypeScript.
+### 1 — `usuario.ts`: hacer `fotoPerfil` opcional
 
-- [ ] 2. Actualizar la interfaz `FiltroReporte` en el modelo
-      Agregar los cinco campos nuevos manteniendo `estrato: number | null` existente:
-      - `estratos: number[] | null`
-      - `mesesReferencia: string[] | null`
-      - `nombreArchivos: string[] | null`
-      - `agruparPorEstrato: boolean`
-      - `ambosFormatos: boolean`
-      Archivo: `src/app/core/models/filtro-reporte.ts`
-      Verificar: `npx ng build --configuration development` — sin errores TypeScript.
+**Por qué:** El campo `fotoPerfil` está declarado como `string` (no opcional). Si el backend devuelve `null` o no incluye el campo, TypeScript solo lo detecta en tiempo de compilación si el strict mode está activo, pero en runtime todos los componentes hacen `user.fotoPerfil` directamente sin guard. La interfaz especificada en los requisitos lo marca como `fotoPerfil?`. Además, el `PerfilComponent` inicializa el objeto con `fotoPerfil: ''` y asigna `this.usuario.fotoPerfil = fotoUrl` sin problema, por lo que el cambio a opcional es retrocompatible.
 
-- [ ] 3. Actualizar la interfaz `Usuario` en el modelo
-      Agregar `correo?: string` sin eliminar `email: string` (hay código que podría depender de email aunque no se encontró en templates).
-      Archivo: `src/app/core/models/usuario.ts`
-      Verificar: `npx ng build --configuration development` — sin errores TypeScript.
+- **Cambio:** `fotoPerfil: string` → `fotoPerfil?: string`
+- **Impacto en componentes:**
+  - `admin.ts`, `user.ts`, `upload.ts`: leen `user.fotoPerfil` y lo asignan a un `string` local. Con el campo opcional, TypeScript exigirá `user.fotoPerfil ?? ''` o similar.
+  - `perfil.ts`: inicializa con `fotoPerfil: ''` — sigue siendo válido con campo opcional.
 
-- [ ] 4. Actualizar `FacturaService` con los nuevos métodos y params opcionales
-      Cambios requeridos:
-      a) Agregar `HttpParams` al import de `@angular/common/http`.
-      b) Actualizar `getMunicipios(tipoFuente?: string, archivo?: string)` para construir `HttpParams` cuando los argumentos estén presentes.
-      c) Actualizar `getEstratos(tipoFuente?: string, archivo?: string)` igual que municipios.
-      d) Agregar `cargarMultiplesArchivos(archivos: File[], tipo: string): Observable<any>` — POST `/facturas/cargar-multiple` con FormData, campo `archivos[]` por cada archivo.
-      e) Agregar `getMeses(tipoFuente?: string, archivo?: string): Observable<string[]>` — GET `/facturas/meses` con query params opcionales.
-      f) Agregar `getResumen(filtros: any): Observable<any>` — POST `/facturas/resumen`.
-      g) Agregar `generarReporteAmbos(filtros: any): Observable<Blob>` — POST `/facturas/reporte-ambos`, `responseType: 'blob'`.
-      h) Agregar `getTotalesPorEstrato(filtros: any): Observable<any>` — POST `/facturas/totales-estrato`.
-      i) Agregar `getTotalesPorMunicipio(filtros: any): Observable<any>` — POST `/facturas/totales-municipio`.
-      j) Agregar `getDetallePorVivienda(filtros: any): Observable<any>` — POST `/facturas/detalle-vivienda`.
-      Archivo: `src/app/core/services/factura.service.ts`
-      Verificar: `npx ng build --configuration development` — sin errores TypeScript.
+**Archivos a modificar:**
+- `src/app/core/models/usuario.ts` — cambiar `fotoPerfil: string` por `fotoPerfil?: string`
+- `src/app/features/dashboard/admin/admin.ts` — línea `next: (user) => this.usuarioFoto = user.fotoPerfil` → `this.usuarioFoto = user.fotoPerfil ?? ''`
+- `src/app/features/dashboard/user/user.ts` — misma corrección en `cargarFotoUsuario`
+- `src/app/features/excel/upload/upload.ts` — misma corrección en `cargarFotoUsuario`
 
-- [ ] 5. Actualizar `ReporteService`
-      Cambios requeridos:
-      a) Actualizar `generarReporte` para que cuando `filtros.ambosFormatos === true` llame a `POST /facturas/reporte-ambos` (responseType blob), y cuando no llame a `POST /facturas/reporte` (endpoint correcto, actualmente apunta a `/reportes/generar` que es incorrecto).
-      b) Agregar método `generarReporteAmbos(filtros: any): Observable<Blob>` — POST `/facturas/reporte-ambos`, `responseType: 'blob'`.
-      Nota: la `apiUrl` de este servicio es `http://localhost:8080/api`; las rutas de facturas son `/facturas/reporte` y `/facturas/reporte-ambos`.
-      Archivo: `src/app/core/services/reporte.service.ts`
-      Verificar: `npx ng build --configuration development` — sin errores TypeScript.
+**Verificación:** `ng build` (sin errores de compilación TypeScript)
 
-- [ ] 6. Actualizar el componente TypeScript `UploadComponent`
-      Cambios requeridos:
-      a) Cambiar `selectedFile: File | null = null` por `selectedFiles: File[] = []`.
-      b) Actualizar `onFileSelected` para aceptar múltiples archivos; validar que cada uno sea `.pdf`, `.xlsx` o `.xls`; asignar los válidos a `selectedFiles`.
-      c) Actualizar `uploadFile` para: si `selectedFiles.length === 1` usar `cargarExcel(selectedFiles[0], tipoFuente)` (comportamiento existente); si `selectedFiles.length > 1` usar `cargarMultiplesArchivos(selectedFiles, tipoFuente)`.
-      d) Manejar respuesta HTTP 207 Multi-Status: mostrar en `mensajeExito` un resumen de resultados parciales (ej. `"X archivos procesados, Y fallidos"`).
-      e) Tras subida exitosa limpiar `selectedFiles = []` y resetear el input `#fileInput`.
-      f) Actualizar todas las referencias a `selectedFile` en el componente por `selectedFiles` (incluido el guard `if (!selectedFiles.length)`).
-      Archivo: `src/app/features/excel/upload/upload.ts`
-      Verificar: `npx ng build --configuration development` — sin errores TypeScript.
+---
 
-- [ ] 7. Actualizar el template HTML del componente `UploadComponent`
-      Cambios requeridos:
-      a) Agregar atributo `multiple` al `<input type="file">`.
-      b) Cambiar `accept=".xlsx,.xls"` a `accept=".pdf,.xlsx,.xls"`.
-      c) Reemplazar el `<p>` de archivo seleccionado: cuando `selectedFiles.length === 1` mostrar nombre y tamaño del único archivo; cuando `selectedFiles.length > 1` mostrar una lista `<ul>` con cada nombre.
-      d) Actualizar el atributo `[disabled]` del botón de subir: cambiar `!selectedFile` por `!selectedFiles.length`.
-      e) Actualizar el texto del botón si se quiere indicar "Subir archivos" cuando hay múltiples (opcional pero recomendado).
-      Archivo: `src/app/features/excel/upload/upload.html`
-      Verificar: `npx ng build --configuration development` — sin errores TypeScript ni errores de template.
+### 2 — `user.ts` (UserComponent): usar `AuthService.logout()` en lugar de `localStorage.removeItem('role')` directo
 
-- [ ] 8. Build final de verificación
-      Ejecutar el build completo y corregir cualquier error TypeScript residual antes de marcar el plan como completo.
-      Comando: `cd c:\Users\Cami\Documents\GitHub\epq-app && npx ng build --configuration development`
-      Verificar: salida termina con `✔ Build at:` (o equivalente) sin errores.
+**Por qué:** El método `logout()` de `UserComponent` hace `localStorage.removeItem('role')` directamente sin llamar a `this.authService.logout()`. Esto deja el token y la clave `user` en localStorage al cerrar sesión desde esa pantalla, dejando al usuario técnicamente autenticado para el guard. `AuthService` ya está inyectado en el componente.
+
+**Archivos a modificar:**
+- `src/app/features/dashboard/user/user.ts` — reemplazar el cuerpo del método `logout()`:
+  ```ts
+  // ANTES
+  logout() {
+    localStorage.removeItem('role');
+    this.router.navigate(['/']);
+  }
+  // DESPUÉS
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
+  }
+  ```
+
+**Verificación:** `ng build` sin errores; comportamiento: al hacer logout desde UserComponent el token se elimina del localStorage.
+
+---
+
+### 3 — `reporte.service.ts`: eliminar el archivo
+
+**Por qué:** Ningún componente importa `ReporteService`. Todos los componentes (`admin.ts`, `upload.ts`) llaman directamente a `FacturaService`, que ya expone `generarReporte()` y `generarReporteAmbos()` hacia los mismos endpoints (`/facturas/reporte` y `/facturas/reporte-ambos`). Mantener `ReporteService` es código muerto que confunde al equipo.
+
+**Archivo a eliminar:**
+- `src/app/core/services/reporte.service.ts`
+
+**Verificación:** `ng build` sin errores (confirma que ningún módulo lo importa).
+
+---
+
+### 4 — `admin.spec.ts`: alinear con la interfaz `FiltroReporte` actual
+
+**Por qué:** El archivo `admin.spec.ts` contiene una copia desactualizada del componente `AdminComponent` que construye un objeto `FiltroReporte` sin los campos nuevos obligatorios: `estratos`, `mesesReferencia`, `nombreArchivos`, `agruparPorEstrato`, `ambosFormatos`, `mostrarDetallePorVivienda`, `mostrarTotalesPorEstrato`, `mostrarTotalesPorMunicipio`. Esto causará errores de compilación TypeScript si se ejecutan los tests o se hace build en modo strict.
+
+**Archivo a modificar:**
+- `src/app/features/dashboard/admin/admin.spec.ts`
+
+**Cambio:** en la construcción del objeto `filtros: FiltroReporte` dentro de `generarReporte()`, añadir los campos faltantes con sus valores por defecto:
+```ts
+estratos: null,
+mesesReferencia: null,
+nombreArchivos: null,
+agruparPorEstrato: false,
+ambosFormatos: false,
+mostrarDetallePorVivienda: false,
+mostrarTotalesPorEstrato: false,
+mostrarTotalesPorMunicipio: false,
+```
+
+**Verificación:** `ng build` sin errores de tipo.
+
+---
+
+## Lo que NO hay que cambiar (ya está correcto)
+
+Estos ítems de los requisitos ya están implementados correctamente en el código actual:
+
+| Ítem de requisito | Razón por la que no hay cambio |
+|---|---|
+| `usuario.ts` — `correo`, `rol: string`, sin `activo` | La interfaz ya tiene exactamente esa forma |
+| `auth.service.ts` — rol desde perfil, no hardcodeado | El `switchMap` a `/usuarios/perfil` ya existe con `perfil?.rol \|\| 'user'` |
+| `auth.service.ts` — `isAuthenticated()` usa `getToken()` | Ya lo hace: `return !!this.getToken()` |
+| `auth-guard.ts` — usa `AuthService.isAuthenticated()` | Ya está así; no usa `localStorage` directamente |
+| `factura.service.ts` — `getArchivosExcel(tipo?)` con query param | Ya implementado con `HttpParams` |
+| `factura.service.ts` — `eliminarArchivoExcel(nombre, tipoFuente?)` con query param | Ya implementado con `HttpParams` |
+| `factura.service.ts` — alias `getTotalesEstrato`/`getTotalesMunicipio` | Ningún componente usa esos nombres; no hay componente que los llame |
+| `filtro-reporte.ts` — `agruparPorEstrato` y `ambosFormatos` | Ya presentes |
+| `usuario.service.ts` — sin duplicado de interfaz | El servicio importa y re-exporta desde `usuario.ts`, no define su propia interfaz |
+
+---
+
+## Orden de ejecución
+
+```
+1. usuario.ts           → fotoPerfil opcional
+2. admin.ts             → fotoPerfil ?? ''
+3. user.ts              → fotoPerfil ?? '' + logout correcto
+4. upload.ts            → fotoPerfil ?? ''
+5. admin.spec.ts        → campos FiltroReporte faltantes
+6. reporte.service.ts   → eliminar
+```
+
+Los ítems 2–4 dependen del 1 (si el tipo cambia a opcional, el compilador exige el fallback). Los ítems 5 y 6 son independientes entre sí y del resto.
+
+**Comando de verificación final:** `ng build` desde `c:\Users\Cami\Documents\GitHub\epq-app` — debe compilar sin errores ni warnings de tipo.

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { tap, switchMap } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -24,21 +24,33 @@ export class AuthService {
     }
   }
 
-    login(username: string, password: string): Observable<any> {
-    // Volvemos a enviar JSON puro
-    return this.http.post(`${this.apiUrl}/auth/login`, { username, password })
-      .pipe(
-        tap(response => {
-          console.log('Login response:', response);
-          if (response && (response as any).token) {
-            this.saveToken((response as any).token);
-            const user = { username: username };
+  /**
+   * Autentica al usuario. El backend devuelve { token, username }.
+   * Luego consulta /usuarios/perfil para obtener el rol real.
+   */
+  login(username: string, password: string): Observable<any> {
+    return this.http.post<{ token: string; username: string }>(
+      `${this.apiUrl}/auth/login`, { username, password }
+    ).pipe(
+      tap(response => {
+        if (response?.token) {
+          this.saveToken(response.token);
+        }
+      }),
+      switchMap(response => {
+        // Consultar el perfil para obtener el rol real del backend
+        return this.http.get<any>(`${this.apiUrl}/usuarios/perfil`).pipe(
+          tap(perfil => {
+            const user = { username: response.username };
             localStorage.setItem(this.userKey, JSON.stringify(user));
             this.currentUserSubject.next(user);
-            localStorage.setItem(this.roleKey, username === 'admin' ? 'admin' : 'user');
-          }
-        })
-      );
+            // El rol viene del backend: 'admin' o 'user'
+            const rol = perfil?.rol || 'user';
+            localStorage.setItem(this.roleKey, rol);
+          })
+        );
+      })
+    );
   }
 
   register(userData: any): Observable<any> {

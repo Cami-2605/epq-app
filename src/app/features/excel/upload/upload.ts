@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { FacturaService } from '../../../core/services/factura.service';
+import { FacturaService, ResultadoCarga } from '../../../core/services/factura.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UsuarioService } from '../../../core/services/usuario.service';
 
@@ -92,25 +92,20 @@ export class UploadComponent implements OnInit {
     console.log('Subiendo archivos:', this.selectedFiles.map(f => f.name).join(', '));
 
     try {
-      let respuesta: any;
+      let respuesta: ResultadoCarga | undefined;
 
       if (this.selectedFiles.length === 1) {
         respuesta = await firstValueFrom(
           this.facturaService.cargarExcel(this.selectedFiles[0], this.tipoFuente)
-        );
-        this.mensajeExito = '' + (respuesta || 'Archivo cargado y procesado correctamente');
+        ) as ResultadoCarga;
+        const r = respuesta as ResultadoCarga;
+        this.mensajeExito = r?.mensaje || `${r?.totalRegistrosProcesados ?? 0} registros procesados correctamente`;
       } else {
         respuesta = await firstValueFrom(
           this.facturaService.cargarMultiplesArchivos(this.selectedFiles, this.tipoFuente)
-        );
-        // Handle HTTP 207 Multi-Status: show partial results summary
-        if (respuesta && typeof respuesta === 'object') {
-          const procesados = respuesta.procesados ?? respuesta.exitosos ?? 0;
-          const fallidos = respuesta.fallidos ?? respuesta.errores ?? 0;
-          this.mensajeExito = `${procesados} archivo(s) procesado(s), ${fallidos} fallido(s)`;
-        } else {
-          this.mensajeExito = '' + (respuesta || 'Archivos cargados correctamente');
-        }
+        ) as ResultadoCarga;
+        const r = respuesta as ResultadoCarga;
+        this.mensajeExito = r?.mensaje || `${r?.totalRegistrosProcesados ?? 0} registros procesados`;
       }
 
       console.log('Respuesta del servidor:', respuesta);
@@ -228,7 +223,7 @@ export class UploadComponent implements OnInit {
 
   cargarFotoUsuario(): void {
     this.usuarioService.getPerfil().subscribe({
-      next: (user) => this.usuarioFoto = user.fotoPerfil,
+      next: (user) => this.usuarioFoto = user.fotoPerfil ?? '',
       error: () => {}
     });
   }
