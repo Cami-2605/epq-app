@@ -125,8 +125,11 @@ export class UploadComponent implements OnInit {
       if (error.status === 0) {
         this.mensajeError = 'No se puede conectar al servidor. ¿El backend está corriendo en http://localhost:8080?';
       } else if (error.status === 400) {
-        const errorMsg = typeof error.error === 'string' ? error.error : 'Error al procesar el archivo. Verifica las columnas obligatorias: municipio, fecha, valor';
-        this.mensajeError = `${errorMsg}`;
+        const body = error.error;
+        const detail = typeof body === 'string'
+          ? body
+          : body?.detalle || body?.mensaje || 'Error al procesar el archivo. Verifica las columnas obligatorias: municipio, fecha, valor';
+        this.mensajeError = detail;
       } else if (error.status === 413) {
         this.mensajeError = 'El archivo es demasiado grande. Máximo 50MB.';
       } else if (error.status === 500) {
