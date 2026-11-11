@@ -8,6 +8,8 @@ export interface Usuario {
   cedula: string;
   fotoPerfil?: string;
   rol: string; // 'admin' | 'user'
+  /** Solo para actualización de contraseña; nunca se lee desde backend. */
+  password?: string;
 }
 
 export interface LoginRequest {

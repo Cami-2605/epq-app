@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UsuarioService } from '../../../core/services/usuario.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { Usuario } from '../../../core/models/usuario';
 
 @Component({
   selector: 'app-user',
@@ -12,15 +13,10 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./user.css']
 })
 export class UserComponent implements OnInit {
-  users = [
-    { nombre: 'Juan Camilo Rojas', cedula: '1090112233', correo: 'juan@epq.com', telefono: '3101112233' },
-    { nombre: 'Maria Paula Leon', cedula: '1090887766', correo: 'maria@epq.com', telefono: '3119977665' },
-    { nombre: 'Carlos Andres Soto', cedula: '1542044766', correo: 'carlos@epq.com', telefono: '3126678990' },
-    { nombre: 'Laura Jimenez', cedula: '1099123344', correo: 'laura@epq.com', telefono: '3154412299' },
-    { nombre: 'Pedro Diaz', cedula: '923334449', correo: 'pedro@epq.com', telefono: '3165500441' }
-  ];
-
+  users: Usuario[] = [];
   usuarioFoto = '';
+  loading = false;
+  error = '';
 
   constructor(
     private router: Router,
@@ -29,6 +25,7 @@ export class UserComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.cargarUsuarios();
     this.cargarFotoUsuario();
   }
 
@@ -36,6 +33,39 @@ export class UserComponent implements OnInit {
     this.usuarioService.getPerfil().subscribe({
       next: (user) => this.usuarioFoto = user.fotoPerfil ?? '',
       error: () => {}
+    });
+  }
+
+  cargarUsuarios(): void {
+    this.loading = true;
+    this.usuarioService.listarUsuarios().subscribe({
+      next: (data) => {
+        this.users = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        const body = err?.error;
+        if (body?.mensaje) {
+          this.error = body.mensaje;
+        } else {
+          this.error = 'Error al cargar usuarios';
+        }
+        this.loading = false;
+      }
+    });
+  }
+
+  eliminarUsuario(user: Usuario): void {
+    if (!confirm(`¿Eliminar al usuario "${user.username}"?`)) return;
+    this.usuarioService.eliminarUsuario(user.id).subscribe({
+      next: () => {
+        this.users = this.users.filter(u => u.id !== user.id);
+      },
+      error: (err) => {
+        const body = err?.error;
+        this.error = body?.mensaje || 'Error al eliminar usuario';
+        setTimeout(() => this.error = '', 4000);
+      }
     });
   }
 
@@ -58,17 +88,5 @@ export class UserComponent implements OnInit {
 
   goToPerfil(): void {
     this.router.navigate(['/perfil']);
-  }
-
-  view(user: any) {
-    alert(`Ver usuario: ${user.nombre}`);
-  }
-
-  remove(user: any) {
-    this.users = this.users.filter(u => u !== user);
-  }
-
-  edit(user: any) {
-    alert(`Editar usuario: ${user.nombre}`);
   }
 }

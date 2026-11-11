@@ -16,6 +16,8 @@
     <span class="sep"></span>
     <button class="active">Generar Reporte</button>
     <span class="sep"></span>
+    <button (click)="goToInformes()">Informes Analíticos</button>
+    <span class="sep"></span>
     <button (click)="goToUsuarios()">Usuarios</button>
   </nav>
 
@@ -188,8 +190,8 @@
       <div class="field">
         <label>Formato de salida</label>
         <div class="options-row">
-          <label class="radio-label" [class.selected]="tipoArchivo === 'excel'">
-            <input type="radio" value="excel" [(ngModel)]="tipoArchivo"> Excel
+          <label class="radio-label" [class.selected]="tipoArchivo === 'xlsx'">
+            <input type="radio" value="xlsx" [(ngModel)]="tipoArchivo"> Excel
           </label>
           <label class="radio-label" [class.selected]="tipoArchivo === 'pdf'">
             <input type="radio" value="pdf" [(ngModel)]="tipoArchivo"> PDF

@@ -26,7 +26,7 @@ export class AdminComponent implements OnInit {
   ordenDireccion = 'DESC';
   agruparPorMunicipio = false;
   agruparPorMes = false;
-  tipoArchivo = 'excel';
+  tipoArchivo = 'xlsx';
   tipoFuente = 'extra';
 
   // Nuevos filtros avanzados
@@ -238,12 +238,22 @@ export class AdminComponent implements OnInit {
           console.error('Mensaje del servidor:', text);
           try {
             const jsonError = JSON.parse(text);
-            errorMessage = jsonError.message || jsonError.error || text;
+            // Usar campos ApiErrorDto: codigo, mensaje, detalle
+            errorMessage = jsonError.mensaje || jsonError.message || jsonError.error || text;
+            if (jsonError.detalle) {
+              console.error('Detalle error [' + (jsonError.codigo || '') + ']:', jsonError.detalle);
+            }
           } catch {
             errorMessage = text || 'Error desconocido del servidor';
           }
         } catch (e) {
           errorMessage = err.message || 'Error desconocido';
+        }
+      } else if (err.error?.mensaje) {
+        // ApiErrorDto directo (no Blob)
+        errorMessage = err.error.mensaje;
+        if (err.error.detalle) {
+          console.error('Detalle error [' + (err.error.codigo || '') + ']:', err.error.detalle);
         }
       } else if (err.message) {
         errorMessage = err.message;
@@ -279,5 +289,9 @@ export class AdminComponent implements OnInit {
 
   goToPerfil(): void {
     this.router.navigate(['/perfil']);
+  }
+
+  goToInformes(): void {
+    this.router.navigate(['/informes']);
   }
 }

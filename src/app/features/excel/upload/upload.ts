@@ -126,6 +126,7 @@ export class UploadComponent implements OnInit {
         this.mensajeError = 'No se puede conectar al servidor. ¿El backend está corriendo en http://localhost:8080?';
       } else if (error.status === 400) {
         const body = error.error;
+        // Usar campos ApiErrorDto: codigo, mensaje, detalle
         const detail = typeof body === 'string'
           ? body
           : body?.detalle || body?.mensaje || 'Error al procesar el archivo. Verifica las columnas obligatorias: municipio, fecha, valor';
@@ -133,9 +134,15 @@ export class UploadComponent implements OnInit {
       } else if (error.status === 413) {
         this.mensajeError = 'El archivo es demasiado grande. Máximo 50MB.';
       } else if (error.status === 500) {
-        this.mensajeError = 'Error interno del servidor. Revisa los logs del backend.';
+        const body = error.error;
+        const detail = typeof body === 'string'
+          ? body
+          : body?.mensaje || 'Error interno del servidor. Revisa los logs del backend.';
+        this.mensajeError = detail;
       } else {
-        this.mensajeError = 'Error al cargar el archivo. Intenta nuevamente.';
+        const body = error.error;
+        const detail = body?.mensaje || body?.detalle || 'Error al cargar el archivo. Intenta nuevamente.';
+        this.mensajeError = detail;
       }
 
       setTimeout(() => this.mensajeError = '', 8000);

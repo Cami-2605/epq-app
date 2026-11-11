@@ -1,0 +1,146 @@
+<div class="page-shell informes-page">
+  <header class="top-bar">
+    <div class="brand">
+      <img src="https://res.cloudinary.com/dmjww2gh5/image/upload/v1765378795/logo_epq_jrplxy.png" class="logo" alt="Logo EPQ" />
+      <span class="name">Empresas Públicas del Quindío EPQ</span>
+    </div>
+    <div class="user-actions">
+      <div class="avatar" [style.backgroundImage]="'url(' + usuarioFoto + ')'"></div>
+      <button class="pill-btn" (click)="goToPerfil()">Mi Perfil</button>
+      <button class="pill-btn" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button (click)="goToExcel()">Subir Excel</button>
+    <span class="sep"></span>
+    <button (click)="goToGenerador()">Generar Reporte</button>
+    <span class="sep"></span>
+    <button class="active">Informes Analíticos</button>
+  </nav>
+
+  <main class="informes-content">
+    <h1>Informes Analíticos</h1>
+    <div class="section-divider"></div>
+
+    <div *ngIf="error" class="alert error" role="alert">⚠ {{ error }}</div>
+    <div *ngIf="success" class="alert success" role="status">✔ {{ success }}</div>
+    <div *ngIf="loading" class="alert info" role="status">
+      <span class="spinner-inline"></span> Generando informe, por favor espere…
+    </div>
+
+    <!-- Tipo de informe -->
+    <div class="card">
+      <div class="card-header">Tipo de informe</div>
+      <div class="card-body">
+        <div class="chips">
+          <button
+            *ngFor="let t of tiposInforme"
+            type="button"
+            (click)="tipoInforme = t.valor"
+            [class.selected]="tipoInforme === t.valor"
+          >{{ t.etiqueta }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-grid">
+
+      <!-- Fechas -->
+      <div class="field">
+        <label>Desde</label>
+        <input type="date" [(ngModel)]="fechaInicio" />
+      </div>
+      <div class="field">
+        <label>Hasta</label>
+        <input type="date" [(ngModel)]="fechaFin" />
+      </div>
+
+      <!-- Municipios -->
+      <div class="field full-width" *ngIf="municipiosDisponibles.length > 0">
+        <label>Municipios</label>
+        <div class="button-group">
+          <button class="small-btn" (click)="seleccionarTodosMunicipios()">Todos</button>
+          <button class="small-btn" (click)="limpiarMunicipios()">Limpiar</button>
+        </div>
+        <div class="municipios-list">
+          <label *ngFor="let m of municipiosDisponibles" class="checkbox-label">
+            <input type="checkbox" [checked]="municipiosSeleccionados.includes(m)" (change)="toggleMunicipio(m)">
+            {{ m }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Estratos -->
+      <div class="field">
+        <label>Estratos <span class="badge" *ngIf="estratosSeleccionados.length > 0">{{ estratosSeleccionados.length }}</span></label>
+        <div class="checkbox-row">
+          <label *ngFor="let e of [1,2,3,4,5,6]" class="checkbox-label compact">
+            <input type="checkbox" [checked]="estratosSeleccionados.includes(e)" (change)="toggleEstrato(e)">
+            {{ e }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Archivos fuente -->
+      <div class="field full-width" *ngIf="archivosNombres.length > 0">
+        <label>Archivos fuente <span class="badge" *ngIf="archivosSeleccionados.length > 0">{{ archivosSeleccionados.length }}</span></label>
+        <div class="chips">
+          <button
+            *ngFor="let nombre of archivosNombres"
+            type="button"
+            (click)="toggleArchivo(nombre)"
+            [class.selected]="archivosSeleccionados.includes(nombre)"
+          >{{ nombre }}</button>
+        </div>
+        <small class="helper-text">Sin selección = todos los archivos.</small>
+      </div>
+
+      <!-- Opciones específicas de proyección -->
+      <ng-container *ngIf="tipoInforme === 'PROYECCION'">
+        <div class="field">
+          <label>Base de meses (1 o 2)</label>
+          <select [(ngModel)]="mesesBase">
+            <option [ngValue]="1">Último mes</option>
+            <option [ngValue]="2">Últimos 2 meses</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Meses futuros a proyectar</label>
+          <select [(ngModel)]="mesesFuturos">
+            <option *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12]" [ngValue]="n">{{ n }}</option>
+          </select>
+        </div>
+      </ng-container>
+
+      <!-- Top N para morosos -->
+      <div class="field" *ngIf="tipoInforme === 'DEUDORES_MOROSOS'">
+        <label>Top N registros</label>
+        <input type="number" [(ngModel)]="topN" min="1" max="1000" />
+      </div>
+
+      <!-- Formato -->
+      <div class="field">
+        <label>Formato de salida</label>
+        <div class="options-row">
+          <label class="radio-label" [class.selected]="formato === 'xlsx'">
+            <input type="radio" value="xlsx" [(ngModel)]="formato"> Excel
+          </label>
+          <label class="radio-label" [class.selected]="formato === 'pdf'">
+            <input type="radio" value="pdf" [(ngModel)]="formato"> PDF
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="generate-btn" (click)="generarInforme()" [disabled]="loading">
+      <span *ngIf="!loading">Generar Informe {{ formato === 'pdf' ? 'PDF' : 'Excel' }}</span>
+      <span *ngIf="loading" class="btn-loading">
+        <span class="spinner-inline"></span> Generando…
+      </span>
+    </button>
+
+  </main>
+</div>

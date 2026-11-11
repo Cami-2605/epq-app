@@ -18,12 +18,44 @@
   </nav>
 
   <main class="users-content">
-    <h1>Generador de Reportes</h1>
+    <h1>Gestión de Usuarios</h1>
     <div class="section-divider"></div>
 
-    <div class="welcome-card">
-      <p>Accede al generador de reportes para crear y descargar tus archivos.</p>
-      <button class="generate-btn" (click)="goToGenerador()">Ir al Generador →</button>
+    <div *ngIf="error" class="alert error">{{ error }}</div>
+    <div *ngIf="loading" class="loading-state">Cargando usuarios…</div>
+
+    <div class="welcome-card" *ngIf="!loading">
+      <table class="users-table" *ngIf="users.length > 0; else sinUsuarios">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of users">
+            <td>{{ u.nombreCompleto }}</td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.correo }}</td>
+            <td>{{ u.telefono || '–' }}</td>
+            <td>
+              <span class="rol-badge" [class.admin]="u.rol === 'admin'">
+                {{ u.rol === 'admin' ? 'Admin' : 'Usuario' }}
+              </span>
+            </td>
+            <td>
+              <button class="small-btn danger" (click)="eliminarUsuario(u)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #sinUsuarios>
+        <p>No hay usuarios registrados.</p>
+      </ng-template>
     </div>
   </main>
 </div>

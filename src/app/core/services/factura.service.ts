@@ -99,16 +99,34 @@ export class FacturaService {
     return this.http.post(`${this.apiUrl}/facturas/resumen`, filtros);
   }
 
-  /** Genera Excel o PDF según filtros.tipoArchivo. Devuelve Blob para descarga. */
+  /**
+   * Genera Excel o PDF según filtros.tipoArchivo.
+   * Llama a /reportes/excel o /reportes/pdf según corresponda.
+   * Devuelve Blob para descarga.
+   */
   generarReporte(filtros: FiltroReporte): Observable<Blob> {
-    return this.http.post(`${this.apiUrl}/facturas/reporte`, filtros, {
+    const endpoint = filtros.tipoArchivo === 'pdf'
+      ? `${this.apiUrl}/reportes/pdf`
+      : `${this.apiUrl}/reportes/excel`;
+    return this.http.post(endpoint, filtros, { responseType: 'blob' });
+  }
+
+  /**
+   * Genera Excel + PDF en un ZIP.
+   * Llama a /reportes/ambos.
+   */
+  generarReporteAmbos(filtros: FiltroReporte): Observable<Blob> {
+    return this.http.post(`${this.apiUrl}/reportes/ambos`, filtros, {
       responseType: 'blob'
     });
   }
 
-  /** Genera Excel + PDF en un ZIP. */
-  generarReporteAmbos(filtros: FiltroReporte): Observable<Blob> {
-    return this.http.post(`${this.apiUrl}/facturas/reporte-ambos`, filtros, {
+  /**
+   * Endpoint de compatibilidad legado: POST /reportes/generar con ReporteRequestDto.
+   * Usar generarReporte() o generarReporteAmbos() para nuevas implementaciones.
+   */
+  generarReporteLegado(filtros: FiltroReporte): Observable<Blob> {
+    return this.http.post(`${this.apiUrl}/reportes/generar`, filtros, {
       responseType: 'blob'
     });
   }
