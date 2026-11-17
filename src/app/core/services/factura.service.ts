@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { FiltroReporte } from '../models/filtro-reporte';
 import { ArchivoExcel } from '../models/factura';
 
@@ -75,21 +76,27 @@ export class FacturaService {
     let params = new HttpParams();
     if (tipoFuente) params = params.set('tipoFuente', tipoFuente);
     if (archivo)    params = params.set('archivo', archivo);
-    return this.http.get<string[]>(`${this.apiUrl}/facturas/municipios`, { params });
+    return this.http.get(`${this.apiUrl}/facturas/municipios`, { params, responseType: 'text' }).pipe(
+      map(text => JSON.parse(text) as string[])
+    );
   }
 
   getEstratos(tipoFuente?: string, archivo?: string): Observable<number[]> {
     let params = new HttpParams();
     if (tipoFuente) params = params.set('tipoFuente', tipoFuente);
     if (archivo)    params = params.set('archivo', archivo);
-    return this.http.get<number[]>(`${this.apiUrl}/facturas/estratos`, { params });
+    return this.http.get(`${this.apiUrl}/facturas/estratos`, { params, responseType: 'text' }).pipe(
+      map(text => JSON.parse(text) as number[])
+    );
   }
 
   getMeses(tipoFuente?: string, archivo?: string): Observable<string[]> {
     let params = new HttpParams();
     if (tipoFuente) params = params.set('tipoFuente', tipoFuente);
     if (archivo)    params = params.set('archivo', archivo);
-    return this.http.get<string[]>(`${this.apiUrl}/facturas/meses`, { params });
+    return this.http.get(`${this.apiUrl}/facturas/meses`, { params, responseType: 'text' }).pipe(
+      map(text => JSON.parse(text) as string[])
+    );
   }
 
   // ── Reportes ───────────────────────────────────────────────────────────────

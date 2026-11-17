@@ -32,7 +32,7 @@ interface ArchivoExcel {
 export class AdminComponent implements OnInit {
 
   // ── Tab state ──────────────────────────────────────────────────────────────
-  activeTab: string = 'reporte';
+  activeTab: string = 'upload';
 
   setTab(tab: string): void {
     this.activeTab = tab;
@@ -118,6 +118,9 @@ export class AdminComponent implements OnInit {
   users: Usuario[] = [];
   usuarios_loading = false;
   usuarios_error = '';
+  usuarios_success = '';
+  showCrearUsuario = false;
+  nuevoUsuario = { nombreCompleto: '', username: '', correo: '', telefono: '', cedula: '', password: '', rol: 'user' };
 
   constructor(
     private router: Router,
@@ -588,6 +591,21 @@ export class AdminComponent implements OnInit {
         setTimeout(() => this.usuarios_error = '', 4000);
       }
     });
+  }
+
+  async crearUsuario(): Promise<void> {
+    try {
+      await firstValueFrom(this.authService.register(this.nuevoUsuario));
+      this.usuarios_success = 'Usuario creado correctamente';
+      this.nuevoUsuario = { nombreCompleto: '', username: '', correo: '', telefono: '', cedula: '', password: '', rol: 'user' };
+      this.showCrearUsuario = false;
+      this.cargarUsuarios();
+      setTimeout(() => this.usuarios_success = '', 4000);
+    } catch (err: any) {
+      const body = err?.error;
+      this.usuarios_error = body?.mensaje || body?.message || 'Error al crear usuario';
+      setTimeout(() => this.usuarios_error = '', 4000);
+    }
   }
 
   // ── Navigation ─────────────────────────────────────────────────────────────

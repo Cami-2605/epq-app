@@ -16,8 +16,6 @@
     <span class="sep"></span>
     <button [class.active]="activeTab === 'reporte'" (click)="setTab('reporte')">Generar Reporte</button>
     <span class="sep"></span>
-    <button [class.active]="activeTab === 'informes'" (click)="setTab('informes')">Informes Analíticos</button>
-    <span class="sep"></span>
     <button [class.active]="activeTab === 'usuarios'" (click)="setTab('usuarios')">Usuarios</button>
   </nav>
 
@@ -99,7 +97,7 @@
   </main>
 
   <!-- ══════════════════════════════════════════════════════
-       TAB: Generar Reporte
+       TAB: Generar Reporte + Informes Analiticos
   ══════════════════════════════════════════════════════ -->
   <main class="admin-content" *ngIf="activeTab === 'reporte'">
     <h1>Generador de Reportes</h1>
@@ -108,7 +106,7 @@
     <div *ngIf="error" class="alert error" role="alert">{{ error }}</div>
     <div *ngIf="success" class="alert success" role="status">{{ success }}</div>
     <div *ngIf="loading" class="alert info" role="status">
-      <span class="spinner-inline"></span> Generando reporte, por favor espere…
+      <span class="spinner-inline"></span> Generando reporte, por favor espere...
     </div>
 
     <!-- Archivo fuente principal -->
@@ -135,9 +133,9 @@
       </div>
     </div>
 
-    <!-- Múltiples archivos fuente -->
+    <!-- Multiples archivos fuente -->
     <div class="card collapsible">
-      <div class="card-header">Filtrar por múltiples archivos <span class="badge" *ngIf="archivosSeleccionados.length > 0">{{ archivosSeleccionados.length }}</span></div>
+      <div class="card-header">Filtrar por multiples archivos <span class="badge" *ngIf="archivosSeleccionados.length > 0">{{ archivosSeleccionados.length }}</span></div>
       <div class="card-body">
         <p class="helper-text">Selecciona archivos adicionales para incluir en el reporte. Si no se selecciona ninguno, se usará el archivo principal de arriba.</p>
         <div class="chips" *ngIf="archivosExcel.length > 0">
@@ -182,18 +180,18 @@
         <input type="date" [(ngModel)]="fechaFin" />
       </div>
 
-      <!-- Estrato único (legacy) -->
+      <!-- Estrato unico (legacy) -->
       <div class="field">
-        <label>Estrato (único)</label>
+        <label>Estrato (unico)</label>
         <select [(ngModel)]="estrato">
           <option [ngValue]="null">Todos los estratos</option>
           <option *ngFor="let e of [1,2,3,4,5,6]" [ngValue]="e">Estrato {{ e }}</option>
         </select>
       </div>
 
-      <!-- Múltiples estratos -->
+      <!-- Multiples estratos -->
       <div class="field">
-        <label>Estratos múltiples <span class="badge" *ngIf="estratosSeleccionados.length > 0">{{ estratosSeleccionados.length }}</span></label>
+        <label>Estratos multiples <span class="badge" *ngIf="estratosSeleccionados.length > 0">{{ estratosSeleccionados.length }}</span></label>
         <div class="checkbox-row">
           <label *ngFor="let e of [1,2,3,4,5,6]" class="checkbox-label compact">
             <input type="checkbox" [checked]="estratosSeleccionados.includes(e)" (change)="toggleEstrato(e)">
@@ -224,7 +222,7 @@
       </div>
 
       <div class="field">
-        <label>Dirección</label>
+        <label>Direccion</label>
         <select [(ngModel)]="ordenDireccion">
           <option value="DESC">Descendente (mayor a menor)</option>
           <option value="ASC">Ascendente (menor a mayor)</option>
@@ -315,22 +313,18 @@
         {{ ambosFormatos ? 'Generar ZIP (Excel + PDF)' : (tipoArchivo === 'pdf' ? 'Generar PDF' : 'Generar Excel') }}
       </span>
       <span *ngIf="loading" class="btn-loading">
-        <span class="spinner-inline"></span> Generando…
+        <span class="spinner-inline"></span> Generando...
       </span>
     </button>
-  </main>
 
-  <!-- ══════════════════════════════════════════════════════
-       TAB: Informes Analíticos
-  ══════════════════════════════════════════════════════ -->
-  <main class="admin-content" *ngIf="activeTab === 'informes'">
-    <h1>Informes Analíticos</h1>
+    <!-- ══════════════════ Informes Analiticos ══════════════════ -->
     <div class="section-divider"></div>
+    <h2 class="section-heading">Informes Analiticos</h2>
 
     <div *ngIf="informes_error" class="alert error" role="alert">{{ informes_error }}</div>
     <div *ngIf="informes_success" class="alert success" role="status">{{ informes_success }}</div>
     <div *ngIf="informes_loading" class="alert info" role="status">
-      <span class="spinner-inline"></span> Generando informe, por favor espere…
+      <span class="spinner-inline"></span> Generando informe, por favor espere...
     </div>
 
     <!-- Tipo de informe -->
@@ -348,7 +342,7 @@
       </div>
     </div>
 
-    <!-- Filtros -->
+    <!-- Filtros informes -->
     <div class="filters-grid">
 
       <!-- Fechas -->
@@ -398,16 +392,16 @@
             [class.selected]="archivosSeleccionados_informes.includes(nombre)"
           >{{ nombre }}</button>
         </div>
-        <small class="helper-text">Sin selección = todos los archivos.</small>
+        <small class="helper-text">Sin seleccion = todos los archivos.</small>
       </div>
 
-      <!-- Opciones específicas de proyección -->
+      <!-- Opciones especificas de proyeccion -->
       <ng-container *ngIf="tipoInforme === 'PROYECCION'">
         <div class="field">
           <label>Base de meses (1 o 2)</label>
           <select [(ngModel)]="mesesBase">
-            <option [ngValue]="1">Último mes</option>
-            <option [ngValue]="2">Últimos 2 meses</option>
+            <option [ngValue]="1">Ultimo mes</option>
+            <option [ngValue]="2">Ultimos 2 meses</option>
           </select>
         </div>
         <div class="field">
@@ -442,7 +436,7 @@
     <button class="generate-btn" (click)="generarInforme()" [disabled]="informes_loading">
       <span *ngIf="!informes_loading">Generar Informe {{ formato === 'pdf' ? 'PDF' : 'Excel' }}</span>
       <span *ngIf="informes_loading" class="btn-loading">
-        <span class="spinner-inline"></span> Generando…
+        <span class="spinner-inline"></span> Generando...
       </span>
     </button>
   </main>
@@ -451,11 +445,11 @@
        TAB: Usuarios
   ══════════════════════════════════════════════════════ -->
   <main class="admin-content" *ngIf="activeTab === 'usuarios'">
-    <h1>Gestión de Usuarios</h1>
+    <h1>Gestion de Usuarios</h1>
     <div class="section-divider"></div>
 
     <div *ngIf="usuarios_error" class="alert error">{{ usuarios_error }}</div>
-    <div *ngIf="usuarios_loading" class="loading-state">Cargando usuarios…</div>
+    <div *ngIf="usuarios_loading" class="loading-state">Cargando usuarios...</div>
 
     <div class="welcome-card" *ngIf="!usuarios_loading">
       <table class="users-table" *ngIf="users.length > 0; else sinUsuarios">
@@ -464,7 +458,7 @@
             <th>Nombre</th>
             <th>Usuario</th>
             <th>Correo</th>
-            <th>Teléfono</th>
+            <th>Telefono</th>
             <th>Rol</th>
             <th>Acciones</th>
           </tr>
@@ -474,7 +468,7 @@
             <td>{{ u.nombreCompleto }}</td>
             <td>{{ u.username }}</td>
             <td>{{ u.correo }}</td>
-            <td>{{ u.telefono || '–' }}</td>
+            <td>{{ u.telefono || '-' }}</td>
             <td>
               <span class="rol-badge" [class.admin]="u.rol === 'admin'">
                 {{ u.rol === 'admin' ? 'Admin' : 'Usuario' }}
@@ -489,6 +483,25 @@
       <ng-template #sinUsuarios>
         <p>No hay usuarios registrados.</p>
       </ng-template>
+    </div>
+
+    <div class="create-user-section">
+      <button class="create-toggle-btn" (click)="showCrearUsuario = !showCrearUsuario">
+        {{showCrearUsuario ? 'Cancelar' : 'Crear nuevo usuario'}}
+      </button>
+      <div class="create-user-form" *ngIf="showCrearUsuario">
+        <div class="create-form-grid">
+          <div class="field"><label>Nombre completo</label><input type="text" [(ngModel)]="nuevoUsuario.nombreCompleto" placeholder="Nombre completo" /></div>
+          <div class="field"><label>Usuario</label><input type="text" [(ngModel)]="nuevoUsuario.username" placeholder="nombre.usuario" /></div>
+          <div class="field"><label>Correo</label><input type="email" [(ngModel)]="nuevoUsuario.correo" placeholder="correo@epq.com" /></div>
+          <div class="field"><label>Telefono</label><input type="text" [(ngModel)]="nuevoUsuario.telefono" placeholder="Telefono" /></div>
+          <div class="field"><label>Cedula</label><input type="text" [(ngModel)]="nuevoUsuario.cedula" placeholder="Cedula" /></div>
+          <div class="field"><label>Contrasena</label><input type="password" [(ngModel)]="nuevoUsuario.password" placeholder="Contrasena" /></div>
+          <div class="field full-width"><label>Rol</label><select [(ngModel)]="nuevoUsuario.rol"><option value="user">Usuario</option><option value="admin">Administrador</option></select></div>
+        </div>
+        <button class="generate-btn" style="margin-top:16px" (click)="crearUsuario()">Crear usuario</button>
+      </div>
+      <div *ngIf="usuarios_success" class="alert success" style="margin-top:12px">{{usuarios_success}}</div>
     </div>
   </main>
 </div>

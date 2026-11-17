@@ -44,7 +44,7 @@
 
         <div class="info-row" *ngIf="!editando">
           <label>Nombre completo:</label><span>{{ usuario.nombreCompleto }}</span>
-          <button class="icon-btn edit" (click)="toggleEdit()">✎</button>
+          <button class="icon-btn edit" (click)="toggleEdit()">Editar</button>
         </div>
         <div class="info-row" *ngIf="editando">
           <label>Nombre completo:</label><input type="text" [(ngModel)]="usuario.nombreCompleto">

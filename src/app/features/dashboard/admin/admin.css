@@ -439,6 +439,368 @@
   border-radius: 40px;
 }
 
+/* ─── Section heading (Informes Analiticos divider) ──────── */
+.section-heading {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-light);
+  margin: 32px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  letter-spacing: -0.2px;
+}
+
+/* ─── Upload area card ───────────────────────────────────── */
+.upload-area {
+  background: var(--blue-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ─── Upload row ─────────────────────────────────────────── */
+.upload-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.upload-row input[type="file"] {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  min-height: 44px;
+  padding: 8px 14px;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.07);
+  color: #e8f0fe;
+  cursor: pointer;
+  transition: border-color 0.18s;
+}
+
+.upload-row input[type="file"]:hover { border-color: rgba(88, 169, 90, 0.5); }
+
+.upload-row select {
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  min-height: 44px;
+  padding: 0 14px;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.07);
+  color: #e8f0fe;
+  cursor: pointer;
+  transition: border-color 0.18s;
+  outline: none;
+}
+
+.upload-row select:hover { border-color: rgba(88, 169, 90, 0.5); }
+.upload-row select:focus { border-color: var(--green); }
+.upload-row select option { background: var(--blue-card); color: #e8f0fe; }
+
+.upload-row button {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4caf50, var(--green));
+  color: #fff;
+  min-height: 44px;
+  padding: 0 24px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.upload-row button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(76, 175, 80, 0.4);
+}
+
+.upload-row button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ─── Info text below file input ─────────────────────────── */
+.info-text {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: left;
+}
+
+/* ─── Table box card ─────────────────────────────────────── */
+.table-box {
+  background: var(--blue-card);
+  border-radius: var(--radius-lg);
+  padding: 4px 12px 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: left;
+}
+
+/* ─── Table header / row grid ────────────────────────────── */
+.table-header,
+.table-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 160px 100px 120px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px;
+}
+
+.table-header {
+  background: linear-gradient(90deg, var(--green), #4caf50);
+  border-radius: 12px;
+  min-height: 44px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 4px;
+  color: #fff;
+}
+
+.table-row {
+  min-height: 52px;
+  font-size: 0.87rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s;
+}
+
+.table-row:hover { background: rgba(255, 255, 255, 0.03); }
+.table-row:last-child { border-bottom: 0; }
+
+/* ─── Table actions ──────────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.actions button {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.actions .view {
+  background: rgba(209, 220, 197, 0.85);
+  color: #2d4a25;
+}
+
+.actions .delete {
+  background: rgba(255, 92, 87, 0.8);
+  color: #fff;
+}
+
+.actions .view:hover,
+.actions .delete:hover { transform: scale(1.08); }
+
+/* ─── Filename cell ──────────────────────────────────────── */
+.filename {
+  font-weight: 500;
+  word-break: break-word;
+  color: #dce8fc;
+}
+
+/* ─── Estado badge ───────────────────────────────────────── */
+.estado {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.estado.procesado {
+  background: rgba(88, 169, 90, 0.18);
+  color: #a8e6a5;
+  border: 1px solid rgba(88, 169, 90, 0.35);
+}
+
+.estado.error {
+  background: rgba(255, 92, 87, 0.18);
+  color: #ffb3b0;
+  border: 1px solid rgba(255, 92, 87, 0.35);
+}
+
+/* ─── Loading state ──────────────────────────────────────── */
+.loading-state {
+  text-align: center;
+  padding: 36px;
+  color: var(--muted);
+}
+
+/* ─── Block spinner (table / full area) ──────────────────── */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.12);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 12px;
+}
+
+/* ─── Users table ────────────────────────────────────────── */
+.welcome-card {
+  background: var(--blue-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.users-table thead tr {
+  background: linear-gradient(90deg, var(--green), #4caf50);
+}
+
+.users-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.users-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s;
+}
+
+.users-table tbody tr:hover { background: rgba(255, 255, 255, 0.04); }
+.users-table tbody tr:last-child { border-bottom: 0; }
+
+.users-table td {
+  padding: 12px 16px;
+  vertical-align: middle;
+  color: #d4e2f6;
+}
+
+/* ─── Rol badge ──────────────────────────────────────────── */
+.rol-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: rgba(88, 169, 90, 0.18);
+  color: #a8e6a5;
+  border: 1px solid rgba(88, 169, 90, 0.35);
+}
+
+.rol-badge.admin {
+  background: rgba(33, 150, 243, 0.18);
+  color: #90caf9;
+  border-color: rgba(33, 150, 243, 0.35);
+}
+
+/* ─── Small danger button ────────────────────────────────── */
+.small-btn.danger {
+  background: rgba(255, 92, 87, 0.15);
+  border: 1px solid rgba(255, 92, 87, 0.4);
+  color: #ffb3b0;
+  border-radius: 40px;
+  padding: 5px 14px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.small-btn.danger:hover {
+  background: rgba(255, 92, 87, 0.3);
+  border-color: #ff5c57;
+  color: #fff;
+}
+
+/* ─── Create user section ────────────────────────────────── */
+.create-user-section {
+  margin-top: 20px;
+}
+
+.create-toggle-btn {
+  background: rgba(88, 169, 90, 0.15);
+  border: 1px solid rgba(88, 169, 90, 0.4);
+  color: #a8e6a5;
+  border-radius: 40px;
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.create-toggle-btn:hover {
+  background: rgba(88, 169, 90, 0.3);
+  color: #fff;
+}
+
+.create-user-form {
+  background: var(--blue-card);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-top: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.create-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px 24px;
+}
+
+.create-form-grid .field label {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.create-form-grid .field input,
+.create-form-grid .field select {
+  width: 100%;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 0 14px;
+  color: #e8f0fe;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.18s;
+  box-sizing: border-box;
+}
+
+.create-form-grid .field input:focus,
+.create-form-grid .field select:focus {
+  border-color: var(--green);
+}
+
 /* ─── Responsive ─────────────────────────────────────────── */
 @media (max-width: 860px) {
   .filters-grid {
@@ -458,4 +820,13 @@
 
   .tabs button { font-size: 0.85rem; }
   .options-row { gap: 8px; }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 90px 1fr 120px 80px 90px;
+  }
+
+  .create-form-grid {
+    grid-template-columns: 1fr;
+  }
 }
