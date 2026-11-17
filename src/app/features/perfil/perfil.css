@@ -17,9 +17,11 @@
 .perfil-card {
   background: var(--blue-card);
   border-radius: var(--radius-lg);
-  padding: 32px;
+  padding: 36px 40px;
+  max-width: 700px;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 220px 1fr;
   gap: 36px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 1px 4px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.06);
@@ -29,8 +31,8 @@
 .foto-section { text-align: center; }
 
 .foto-perfil {
-  width: 200px;
-  height: 200px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   overflow: hidden;
   margin: 0 auto 16px;
@@ -85,14 +87,14 @@
 .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 
 /* ─── Info section ───────────────────────────────────────── */
-.info-section { display: flex; flex-direction: column; gap: 4px; }
+.info-section { display: flex; flex-direction: column; gap: 0; }
 
 .info-row {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 .info-row:last-child { border-bottom: none; }
@@ -100,11 +102,11 @@
 .info-row label {
   width: 150px;
   flex-shrink: 0;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.5px;
 }
 
 .info-row span { flex: 1; font-size: 0.92rem; }
@@ -126,6 +128,7 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
+/* ─── Icon / edit button ─────────────────────────────────── */
 .icon-btn {
   background: none;
   border: none;
@@ -137,16 +140,38 @@
   color: var(--muted);
 }
 
-.icon-btn.edit:hover { background: rgba(88, 169, 90, 0.25); color: #a8e6a5; }
+.icon-btn.edit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(88, 169, 90, 0.5);
+  background: rgba(88, 169, 90, 0.08);
+  color: #a8e6a5;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.icon-btn.edit:hover {
+  background: rgba(88, 169, 90, 0.22);
+  border-color: var(--green);
+}
 
 /* ─── Role badge ─────────────────────────────────────────── */
 .rol-badge {
   display: inline-block;
-  padding: 3px 12px;
+  padding: 4px 14px;
   border-radius: 40px;
-  font-size: 0.73rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .rol-badge.admin {
@@ -159,7 +184,9 @@
 .edit-actions {
   display: flex;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
 }
 
 /* ─── Responsive ─────────────────────────────────────────── */
