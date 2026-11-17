@@ -82,7 +82,12 @@ export class PerfilComponent implements OnInit {
   }
 
   logout(): void { this.authService.logout(); this.router.navigate(['/']); }
-  goToExcel(): void { this.router.navigate(['/excel']); }
-  goToGenerador(): void { this.router.navigate(['/dashboard-admin']); }
-  goToUsuarios(): void { this.router.navigate(['/dashboard-user']); }
+
+  volver(): void {
+    if (this.authService.isAdmin()) {
+      this.router.navigate(['/dashboard-admin']);
+    } else {
+      this.router.navigate(['/dashboard-user']);
+    }
+  }
 }
