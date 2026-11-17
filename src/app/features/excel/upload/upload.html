@@ -44,10 +44,10 @@
       </div>
       <ng-container *ngIf="selectedFiles.length > 0">
         <p class="info-text" *ngIf="selectedFiles.length === 1">
-          📎 Archivo seleccionado: <strong>{{ selectedFiles[0].name }}</strong> ({{ formatPeso(selectedFiles[0].size) }})
+          Archivo seleccionado: <strong>{{ selectedFiles[0].name }}</strong> ({{ formatPeso(selectedFiles[0].size) }})
         </p>
         <div class="info-text" *ngIf="selectedFiles.length > 1">
-          📎 {{ selectedFiles.length }} archivos seleccionados:
+          {{ selectedFiles.length }} archivos seleccionados:
           <ul>
             <li *ngFor="let f of selectedFiles">{{ f.name }} ({{ formatPeso(f.size) }})</li>
           </ul>
@@ -66,8 +66,8 @@
 
       <div class="table-row" *ngFor="let file of archivos">
         <div class="actions">
-          <button class="view" (click)="verDetalle(file)" title="Ver detalles">👁</button>
-          <button class="delete" (click)="eliminarArchivo(file)" title="Eliminar">🗑️</button>
+          <button class="view" (click)="verDetalle(file)" title="Ver detalles">Ver</button>
+          <button class="delete" (click)="eliminarArchivo(file)" title="Eliminar">Eliminar</button>
         </div>
         <span class="filename">{{ file.nombreArchivo }}</span>
         <span>{{ formatFecha(file.fechaCarga) }}</span>

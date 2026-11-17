@@ -3,10 +3,24 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { FacturaService } from '../../../core/services/factura.service';
+import { FacturaService, ResultadoCarga } from '../../../core/services/factura.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { UsuarioService } from '../../../core/services/usuario.service';
+import { InformeService } from '../../../core/services/informe.service';
 import { FiltroReporte } from '../../../core/models/filtro-reporte';
+import { FiltroInforme, TipoInforme } from '../../../core/models/informe';
+import { Usuario } from '../../../core/models/usuario';
+
+interface ArchivoExcel {
+  id: number;
+  nombreArchivo: string;
+  peso: number;
+  fechaCarga: string;
+  tipo: string;
+  registrosProcesados: number;
+  registrosFallidos: number;
+  estado: string;
+}
 
 @Component({
   selector: 'app-admin',
@@ -16,7 +30,18 @@ import { FiltroReporte } from '../../../core/models/filtro-reporte';
   styleUrls: ['./admin.css']
 })
 export class AdminComponent implements OnInit {
-  // Filtros básicos
+
+  // ── Tab state ──────────────────────────────────────────────────────────────
+  activeTab: string = 'reporte';
+
+  setTab(tab: string): void {
+    this.activeTab = tab;
+  }
+
+  // ── Shared / layout ────────────────────────────────────────────────────────
+  usuarioFoto = '';
+
+  // ── Reporte tab — filtros básicos ──────────────────────────────────────────
   municipiosSeleccionados: string[] = [];
   fechaInicio = '';
   fechaFin = '';
@@ -29,41 +54,83 @@ export class AdminComponent implements OnInit {
   tipoArchivo = 'xlsx';
   tipoFuente = 'extra';
 
-  // Nuevos filtros avanzados
+  // Reporte tab — filtros avanzados
   estratosSeleccionados: number[] = [];
   mesesSeleccionados: string[] = [];
   archivosSeleccionados: string[] = [];
   agruparPorEstrato = false;
   ambosFormatos = false;
 
-  // Reportes avanzados
+  // Reporte tab — secciones avanzadas
   mostrarDetallePorVivienda = false;
   mostrarTotalesPorEstrato = false;
   mostrarTotalesPorMunicipio = false;
 
-  // Datos
+  // Reporte tab — datos
   municipiosDisponibles: string[] = [];
   estratosDisponibles: number[] = [1, 2, 3, 4, 5, 6];
   mesesDisponibles: string[] = [];
-  archivosExcel: any[] = [];
+  archivosExcel: ArchivoExcel[] = [];
   archivoSeleccionado: any = null;
-  usuarioFoto = '';
 
-  // Estados
+  // Reporte tab — estados
   loading = false;
   error = '';
   success = '';
+
+  // ── Upload tab ─────────────────────────────────────────────────────────────
+  selectedFiles: File[] = [];
+  uploading = false;
+  tipoFuente_upload: string = 'extra';
+  mensajeError = '';
+  mensajeExito = '';
+
+  // ── Informes tab ───────────────────────────────────────────────────────────
+  tipoInforme: TipoInforme = 'DEUDORES_MOROSOS';
+  archivosNombres: string[] = [];
+  archivosSeleccionados_informes: string[] = [];
+  topN = 40;
+  mesesBase = 2;
+  mesesFuturos = 3;
+  formato: 'xlsx' | 'pdf' = 'xlsx';
+
+  tiposInforme: { valor: TipoInforme; etiqueta: string }[] = [
+    { valor: 'DEUDORES_MOROSOS',  etiqueta: 'Deudores Morosos' },
+    { valor: 'TOTALES_MUNICIPIO', etiqueta: 'Totales por Municipio' },
+    { valor: 'TOTALES_ESTRATO',   etiqueta: 'Totales por Estrato' },
+    { valor: 'CARTERA_ACUMULADA', etiqueta: 'Cartera Morosa Acumulada' },
+    { valor: 'RECAUDO_SERVICIO',  etiqueta: 'Recaudo por Servicio' },
+    { valor: 'PROYECCION',        etiqueta: 'Proyeccion de Recaudo' },
+  ];
+
+  // Informes tab — estados
+  informes_loading = false;
+  informes_error = '';
+  informes_success = '';
+
+  // Informes tab — shared filters (re-use municipiosDisponibles from reporte)
+  informes_municipiosSeleccionados: string[] = [];
+  informes_estratosSeleccionados: number[] = [];
+  informes_fechaInicio = '';
+  informes_fechaFin = '';
+
+  // ── Usuarios tab ───────────────────────────────────────────────────────────
+  users: Usuario[] = [];
+  usuarios_loading = false;
+  usuarios_error = '';
 
   constructor(
     private router: Router,
     private facturaService: FacturaService,
     public authService: AuthService,
-    private usuarioService: UsuarioService
+    private usuarioService: UsuarioService,
+    private informeService: InformeService
   ) {}
 
   ngOnInit(): void {
     this.cargarDatosIniciales();
     this.cargarFotoUsuario();
+    this.cargarUsuarios();
   }
 
   cargarFotoUsuario(): void {
@@ -84,16 +151,20 @@ export class AdminComponent implements OnInit {
       this.municipiosDisponibles = municipios || [];
       this.archivosExcel = archivos || [];
       this.mesesDisponibles = meses || [];
+      this.archivosNombres = (archivos || []).map((a: any) => a.nombreArchivo);
       if (this.municipiosDisponibles.length) {
         this.municipiosSeleccionados = [...this.municipiosDisponibles];
+        this.informes_municipiosSeleccionados = [...this.municipiosDisponibles];
       }
-    } catch (error) {
+    } catch {
       this.error = 'Error al cargar datos';
       setTimeout(() => this.error = '', 5000);
     } finally {
       this.loading = false;
     }
   }
+
+  // ── Reporte tab methods ────────────────────────────────────────────────────
 
   toggleMunicipio(municipio: string): void {
     const idx = this.municipiosSeleccionados.indexOf(municipio);
@@ -154,12 +225,10 @@ export class AdminComponent implements OnInit {
       return;
     }
 
-    // Determinar nombre de archivo único (compatibilidad hacia atrás)
     const nombreArchivoUnico = this.archivoSeleccionado
       ? (this.archivoSeleccionado?.nombreArchivo || this.archivoSeleccionado?.name)
       : null;
 
-    // Determinar lista de archivos para filtro múltiple
     const nombreArchivos = this.archivosSeleccionados.length > 0
       ? this.archivosSeleccionados
       : (nombreArchivoUnico ? [nombreArchivoUnico] : null);
@@ -193,19 +262,16 @@ export class AdminComponent implements OnInit {
       tipoFuente: this.tipoFuente,
     };
 
-    console.log('Enviando filtros:', JSON.stringify(filtros, null, 2));
-
     this.loading = true;
     this.error = '';
     this.success = '';
 
     try {
-      // Bifurcación: si ambosFormatos, llamar al endpoint ZIP
       const blob = this.ambosFormatos
         ? await firstValueFrom(this.facturaService.generarReporteAmbos(filtros))
         : await firstValueFrom(this.facturaService.generarReporte(filtros));
 
-      if (!blob) throw new Error('No se recibió el archivo');
+      if (!blob) throw new Error('No se recibio el archivo');
 
       if (blob.type === 'application/json' || blob.size < 100) {
         const text = await blob.text();
@@ -235,10 +301,8 @@ export class AdminComponent implements OnInit {
       if (err.error instanceof Blob) {
         try {
           const text = await err.error.text();
-          console.error('Mensaje del servidor:', text);
           try {
             const jsonError = JSON.parse(text);
-            // Usar campos ApiErrorDto: codigo, mensaje, detalle
             errorMessage = jsonError.mensaje || jsonError.message || jsonError.error || text;
             if (jsonError.detalle) {
               console.error('Detalle error [' + (jsonError.codigo || '') + ']:', jsonError.detalle);
@@ -246,11 +310,10 @@ export class AdminComponent implements OnInit {
           } catch {
             errorMessage = text || 'Error desconocido del servidor';
           }
-        } catch (e) {
+        } catch {
           errorMessage = err.message || 'Error desconocido';
         }
       } else if (err.error?.mensaje) {
-        // ApiErrorDto directo (no Blob)
         errorMessage = err.error.mensaje;
         if (err.error.detalle) {
           console.error('Detalle error [' + (err.error.codigo || '') + ']:', err.error.detalle);
@@ -270,28 +333,271 @@ export class AdminComponent implements OnInit {
     return file?.nombreArchivo || file?.name || 'Sin nombre';
   }
 
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/']);
+  // ── Upload tab methods ─────────────────────────────────────────────────────
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const validos: File[] = [];
+      const invalidos: string[] = [];
+
+      Array.from(input.files).forEach(file => {
+        const fileName = file.name.toLowerCase();
+        const isValid = fileName.endsWith('.xlsx') || fileName.endsWith('.xls') || fileName.endsWith('.pdf');
+        if (isValid) {
+          validos.push(file);
+        } else {
+          invalidos.push(file.name);
+        }
+      });
+
+      if (invalidos.length > 0) {
+        this.mensajeError = `Archivos no permitidos: ${invalidos.join(', ')}. Solo se permiten .pdf, .xlsx, .xls`;
+        setTimeout(() => this.mensajeError = '', 5000);
+      } else {
+        this.mensajeError = '';
+      }
+
+      this.selectedFiles = validos;
+    }
   }
 
-  goToExcel(): void {
-    this.router.navigate(['/excel']);
+  async uploadFile(): Promise<void> {
+    if (!this.selectedFiles.length) {
+      this.mensajeError = 'Selecciona al menos un archivo primero';
+      return;
+    }
+
+    this.uploading = true;
+    this.mensajeError = '';
+    this.mensajeExito = '';
+
+    try {
+      let respuesta: ResultadoCarga | undefined;
+
+      if (this.selectedFiles.length === 1) {
+        respuesta = await firstValueFrom(
+          this.facturaService.cargarExcel(this.selectedFiles[0], this.tipoFuente_upload)
+        ) as ResultadoCarga;
+        const r = respuesta as ResultadoCarga;
+        this.mensajeExito = r?.mensaje || `${r?.totalRegistrosProcesados ?? 0} registros procesados correctamente`;
+      } else {
+        respuesta = await firstValueFrom(
+          this.facturaService.cargarMultiplesArchivos(this.selectedFiles, this.tipoFuente_upload)
+        ) as ResultadoCarga;
+        const r = respuesta as ResultadoCarga;
+        this.mensajeExito = r?.mensaje || `${r?.totalRegistrosProcesados ?? 0} registros procesados`;
+      }
+
+      this.selectedFiles = [];
+
+      const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+
+      await this.cargarArchivos();
+
+      setTimeout(() => this.mensajeExito = '', 5000);
+
+    } catch (error: any) {
+      if (error.status === 0) {
+        this.mensajeError = 'No se puede conectar al servidor.';
+      } else if (error.status === 400) {
+        const body = error.error;
+        const detail = typeof body === 'string'
+          ? body
+          : body?.detalle || body?.mensaje || 'Error al procesar el archivo.';
+        this.mensajeError = detail;
+      } else if (error.status === 413) {
+        this.mensajeError = 'El archivo es demasiado grande. Maximo 50MB.';
+      } else if (error.status === 500) {
+        const body = error.error;
+        const detail = typeof body === 'string'
+          ? body
+          : body?.mensaje || 'Error interno del servidor.';
+        this.mensajeError = detail;
+      } else {
+        const body = error.error;
+        const detail = body?.mensaje || body?.detalle || 'Error al cargar el archivo.';
+        this.mensajeError = detail;
+      }
+
+      setTimeout(() => this.mensajeError = '', 8000);
+    } finally {
+      this.uploading = false;
+    }
   }
 
-  goToGenerador(): void {
-    this.router.navigate(['/dashboard-admin']);
+  async cargarArchivos(): Promise<void> {
+    try {
+      this.archivosExcel = await firstValueFrom(this.facturaService.getArchivosExcel()) || [];
+      this.archivosNombres = this.archivosExcel.map((a: any) => a.nombreArchivo);
+    } catch {
+      this.mensajeError = 'Error al cargar la lista de archivos';
+      setTimeout(() => this.mensajeError = '', 3000);
+    }
   }
 
-  goToUsuarios(): void {
-    this.router.navigate(['/dashboard-user']);
+  async eliminarArchivoExcel(archivo: ArchivoExcel): Promise<void> {
+    if (!confirm(`Eliminar "${archivo.nombreArchivo}"?`)) return;
+
+    try {
+      await firstValueFrom(this.facturaService.eliminarArchivoExcel(archivo.nombreArchivo));
+      this.mensajeExito = 'Excel eliminado correctamente';
+      await this.cargarArchivos();
+      setTimeout(() => this.mensajeExito = '', 3000);
+    } catch {
+      this.mensajeError = 'Error al eliminar el archivo';
+      setTimeout(() => this.mensajeError = '', 3000);
+    }
   }
+
+  verDetalle(archivo: ArchivoExcel): void {
+    const detalles = `Archivo: ${archivo.nombreArchivo}\nRegistros procesados: ${archivo.registrosProcesados || 0}\nRegistros fallidos: ${archivo.registrosFallidos || 0}\nEstado: ${archivo.estado || 'PROCESADO'}\nFecha carga: ${this.formatFecha(archivo.fechaCarga)}\nPeso: ${this.formatPeso(archivo.peso || 0)}`;
+    alert(detalles);
+  }
+
+  formatPeso(bytes: number): string {
+    if (!bytes || bytes === 0) return 'N/A';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+
+  formatFecha(fecha: string): string {
+    if (!fecha) return 'N/A';
+    try {
+      return new Date(fecha).toLocaleDateString('es-CO', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    } catch {
+      return fecha;
+    }
+  }
+
+  // ── Informes tab methods ───────────────────────────────────────────────────
+
+  toggleArchivo(nombre: string): void {
+    const idx = this.archivosSeleccionados_informes.indexOf(nombre);
+    if (idx === -1) this.archivosSeleccionados_informes.push(nombre);
+    else this.archivosSeleccionados_informes.splice(idx, 1);
+  }
+
+  informes_toggleMunicipio(municipio: string): void {
+    const idx = this.informes_municipiosSeleccionados.indexOf(municipio);
+    if (idx === -1) this.informes_municipiosSeleccionados.push(municipio);
+    else this.informes_municipiosSeleccionados.splice(idx, 1);
+  }
+
+  informes_seleccionarTodos(): void {
+    this.informes_municipiosSeleccionados = [...this.municipiosDisponibles];
+  }
+
+  informes_limpiarMunicipios(): void {
+    this.informes_municipiosSeleccionados = [];
+  }
+
+  informes_toggleEstrato(e: number): void {
+    const idx = this.informes_estratosSeleccionados.indexOf(e);
+    if (idx === -1) this.informes_estratosSeleccionados.push(e);
+    else this.informes_estratosSeleccionados.splice(idx, 1);
+  }
+
+  async generarInforme(): Promise<void> {
+    this.informes_loading = true;
+    this.informes_error = '';
+    this.informes_success = '';
+
+    const filtros: FiltroInforme = {
+      tipoInforme: this.tipoInforme,
+      municipios: this.informes_municipiosSeleccionados.length > 0 ? this.informes_municipiosSeleccionados : null,
+      estratos: this.informes_estratosSeleccionados.length > 0 ? this.informes_estratosSeleccionados : null,
+      nombreArchivos: this.archivosSeleccionados_informes.length > 0 ? this.archivosSeleccionados_informes : null,
+      fechaInicio: this.informes_fechaInicio || null,
+      fechaFin: this.informes_fechaFin || null,
+      topN: this.topN,
+      mesesBase: this.mesesBase,
+      mesesFuturos: this.mesesFuturos,
+      formato: this.formato
+    };
+
+    try {
+      const blob = await firstValueFrom(this.informeService.generar(filtros));
+
+      if (!blob) throw new Error('No se recibio el archivo');
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const ext = this.formato === 'pdf' ? 'pdf' : 'xlsx';
+      const tipo = this.tipoInforme.toLowerCase().replace(/_/g, '-');
+      a.download = `informe_epq_${tipo}_${Date.now()}.${ext}`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+
+      this.informes_success = 'Informe generado exitosamente';
+      setTimeout(() => this.informes_success = '', 4000);
+    } catch (err: any) {
+      if (err.error instanceof Blob) {
+        try {
+          const text = await err.error.text();
+          const jsonError = JSON.parse(text);
+          this.informes_error = jsonError.mensaje || jsonError.message || text;
+        } catch {
+          this.informes_error = err.message || 'Error al generar el informe';
+        }
+      } else if (err.error?.mensaje) {
+        this.informes_error = err.error.mensaje;
+      } else {
+        this.informes_error = err.message || 'Error al generar el informe';
+      }
+
+      setTimeout(() => this.informes_error = '', 8000);
+    } finally {
+      this.informes_loading = false;
+    }
+  }
+
+  // ── Usuarios tab methods ───────────────────────────────────────────────────
+
+  cargarUsuarios(): void {
+    this.usuarios_loading = true;
+    this.usuarioService.listarUsuarios().subscribe({
+      next: (data) => {
+        this.users = data;
+        this.usuarios_loading = false;
+      },
+      error: (err) => {
+        const body = err?.error;
+        this.usuarios_error = body?.mensaje || 'Error al cargar usuarios';
+        this.usuarios_loading = false;
+      }
+    });
+  }
+
+  eliminarUsuario(user: Usuario): void {
+    if (!confirm(`Eliminar al usuario "${user.username}"?`)) return;
+    this.usuarioService.eliminarUsuario(user.id).subscribe({
+      next: () => {
+        this.users = this.users.filter(u => u.id !== user.id);
+      },
+      error: (err) => {
+        const body = err?.error;
+        this.usuarios_error = body?.mensaje || 'Error al eliminar usuario';
+        setTimeout(() => this.usuarios_error = '', 4000);
+      }
+    });
+  }
+
+  // ── Navigation ─────────────────────────────────────────────────────────────
 
   goToPerfil(): void {
     this.router.navigate(['/perfil']);
   }
 
-  goToInformes(): void {
-    this.router.navigate(['/informes']);
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
   }
 }

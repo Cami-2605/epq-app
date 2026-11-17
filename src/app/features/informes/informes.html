@@ -23,8 +23,8 @@
     <h1>Informes Analíticos</h1>
     <div class="section-divider"></div>
 
-    <div *ngIf="error" class="alert error" role="alert">⚠ {{ error }}</div>
-    <div *ngIf="success" class="alert success" role="status">✔ {{ success }}</div>
+    <div *ngIf="error" class="alert error" role="alert">{{ error }}</div>
+    <div *ngIf="success" class="alert success" role="status">{{ success }}</div>
     <div *ngIf="loading" class="alert info" role="status">
       <span class="spinner-inline"></span> Generando informe, por favor espere…
     </div>

@@ -12,21 +12,101 @@
   </header>
 
   <nav class="tabs">
-    <button (click)="goToExcel()">Subir Excel</button>
+    <button [class.active]="activeTab === 'upload'" (click)="setTab('upload')">Subir Excel</button>
     <span class="sep"></span>
-    <button class="active">Generar Reporte</button>
+    <button [class.active]="activeTab === 'reporte'" (click)="setTab('reporte')">Generar Reporte</button>
     <span class="sep"></span>
-    <button (click)="goToInformes()">Informes Analíticos</button>
+    <button [class.active]="activeTab === 'informes'" (click)="setTab('informes')">Informes Analíticos</button>
     <span class="sep"></span>
-    <button (click)="goToUsuarios()">Usuarios</button>
+    <button [class.active]="activeTab === 'usuarios'" (click)="setTab('usuarios')">Usuarios</button>
   </nav>
 
-  <main class="admin-content">
+  <!-- ══════════════════════════════════════════════════════
+       TAB: Subir Excel
+  ══════════════════════════════════════════════════════ -->
+  <main class="admin-content" *ngIf="activeTab === 'upload'">
+    <h1>Cargar Archivo Excel</h1>
+    <div class="section-divider"></div>
+
+    <div *ngIf="mensajeError" class="alert error">{{ mensajeError }}</div>
+    <div *ngIf="mensajeExito" class="alert success">{{ mensajeExito }}</div>
+
+    <section class="upload-area">
+      <div class="upload-row">
+        <input
+          id="fileInput"
+          type="file"
+          accept=".pdf,.xlsx,.xls"
+          multiple
+          (change)="onFileSelected($event)"
+          [disabled]="uploading"
+        />
+        <select [(ngModel)]="tipoFuente_upload" [disabled]="uploading">
+          <option value="extra">Archivos Extra</option>
+          <option value="base">Archivos Base</option>
+        </select>
+        <button (click)="uploadFile()" [disabled]="selectedFiles.length === 0 || uploading">
+          {{ uploading ? 'Subiendo...' : (selectedFiles.length > 1 ? 'Subir archivos' : 'Subir archivo') }}
+        </button>
+      </div>
+      <ng-container *ngIf="selectedFiles.length > 0">
+        <p class="info-text" *ngIf="selectedFiles.length === 1">
+          Archivo seleccionado: <strong>{{ selectedFiles[0].name }}</strong> ({{ formatPeso(selectedFiles[0].size) }})
+        </p>
+        <div class="info-text" *ngIf="selectedFiles.length > 1">
+          {{ selectedFiles.length }} archivos seleccionados:
+          <ul>
+            <li *ngFor="let f of selectedFiles">{{ f.name }} ({{ formatPeso(f.size) }})</li>
+          </ul>
+        </div>
+      </ng-container>
+    </section>
+
+    <section class="table-box">
+      <div class="table-header">
+        <span>Acciones</span>
+        <span>Nombre del archivo</span>
+        <span>Fecha carga</span>
+        <span>Registros</span>
+        <span>Estado</span>
+      </div>
+
+      <div class="table-row" *ngFor="let file of archivosExcel">
+        <div class="actions">
+          <button class="view" (click)="verDetalle(file)" title="Ver detalles">Ver</button>
+          <button class="delete" (click)="eliminarArchivoExcel(file)" title="Eliminar">Eliminar</button>
+        </div>
+        <span class="filename">{{ file.nombreArchivo }}</span>
+        <span>{{ formatFecha(file.fechaCarga) }}</span>
+        <span>{{ file.registrosProcesados || 0 }}</span>
+        <span>
+          <span class="estado" [class.procesado]="file.estado === 'PROCESADO'" [class.error]="file.estado === 'ERROR'">
+            {{ file.estado || 'PROCESADO' }}
+          </span>
+        </span>
+      </div>
+
+      <div *ngIf="archivosExcel.length === 0 && !loading" class="empty-state">
+        <p>No hay archivos cargados</p>
+        <p class="info">Sube un archivo Excel para comenzar</p>
+      </div>
+
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Cargando archivos</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════
+       TAB: Generar Reporte
+  ══════════════════════════════════════════════════════ -->
+  <main class="admin-content" *ngIf="activeTab === 'reporte'">
     <h1>Generador de Reportes</h1>
     <div class="section-divider"></div>
 
-    <div *ngIf="error" class="alert error" role="alert">⚠ {{ error }}</div>
-    <div *ngIf="success" class="alert success" role="status">✔ {{ success }}</div>
+    <div *ngIf="error" class="alert error" role="alert">{{ error }}</div>
+    <div *ngIf="success" class="alert success" role="status">{{ success }}</div>
     <div *ngIf="loading" class="alert info" role="status">
       <span class="spinner-inline"></span> Generando reporte, por favor espere…
     </div>
@@ -49,7 +129,7 @@
         <ng-template #noArchivos>
           <div class="empty-state">
             <p>No hay archivos cargados.</p>
-            <button class="small-btn" (click)="goToExcel()">Ir a Subir Excel →</button>
+            <button class="small-btn" (click)="setTab('upload')">Ir a Subir Excel</button>
           </div>
         </ng-template>
       </div>
@@ -135,7 +215,7 @@
 
       <!-- Ordenamiento -->
       <div class="field">
-        <label>↕ Ordenar por</label>
+        <label>Ordenar por</label>
         <select [(ngModel)]="ordenarPor">
           <option value="fecha">Fecha</option>
           <option value="valor">Valor de factura</option>
@@ -144,7 +224,7 @@
       </div>
 
       <div class="field">
-        <label>↕ Dirección</label>
+        <label>Dirección</label>
         <select [(ngModel)]="ordenDireccion">
           <option value="DESC">Descendente (mayor a menor)</option>
           <option value="ASC">Ascendente (menor a mayor)</option>
@@ -153,7 +233,7 @@
 
       <!-- Opciones generales -->
       <div class="field full-width">
-        <label>⚙ Opciones generales</label>
+        <label>Opciones generales</label>
         <div class="options-row">
           <label class="checkbox-label">
             <input type="checkbox" [(ngModel)]="soloMorosos"> Solo morosos
@@ -238,5 +318,177 @@
         <span class="spinner-inline"></span> Generando…
       </span>
     </button>
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════
+       TAB: Informes Analíticos
+  ══════════════════════════════════════════════════════ -->
+  <main class="admin-content" *ngIf="activeTab === 'informes'">
+    <h1>Informes Analíticos</h1>
+    <div class="section-divider"></div>
+
+    <div *ngIf="informes_error" class="alert error" role="alert">{{ informes_error }}</div>
+    <div *ngIf="informes_success" class="alert success" role="status">{{ informes_success }}</div>
+    <div *ngIf="informes_loading" class="alert info" role="status">
+      <span class="spinner-inline"></span> Generando informe, por favor espere…
+    </div>
+
+    <!-- Tipo de informe -->
+    <div class="card">
+      <div class="card-header">Tipo de informe</div>
+      <div class="card-body">
+        <div class="chips">
+          <button
+            *ngFor="let t of tiposInforme"
+            type="button"
+            (click)="tipoInforme = t.valor"
+            [class.selected]="tipoInforme === t.valor"
+          >{{ t.etiqueta }}</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="filters-grid">
+
+      <!-- Fechas -->
+      <div class="field">
+        <label>Desde</label>
+        <input type="date" [(ngModel)]="informes_fechaInicio" />
+      </div>
+      <div class="field">
+        <label>Hasta</label>
+        <input type="date" [(ngModel)]="informes_fechaFin" />
+      </div>
+
+      <!-- Municipios -->
+      <div class="field full-width" *ngIf="municipiosDisponibles.length > 0">
+        <label>Municipios</label>
+        <div class="button-group">
+          <button class="small-btn" (click)="informes_seleccionarTodos()">Todos</button>
+          <button class="small-btn" (click)="informes_limpiarMunicipios()">Limpiar</button>
+        </div>
+        <div class="municipios-list">
+          <label *ngFor="let m of municipiosDisponibles" class="checkbox-label">
+            <input type="checkbox" [checked]="informes_municipiosSeleccionados.includes(m)" (change)="informes_toggleMunicipio(m)">
+            {{ m }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Estratos -->
+      <div class="field">
+        <label>Estratos <span class="badge" *ngIf="informes_estratosSeleccionados.length > 0">{{ informes_estratosSeleccionados.length }}</span></label>
+        <div class="checkbox-row">
+          <label *ngFor="let e of [1,2,3,4,5,6]" class="checkbox-label compact">
+            <input type="checkbox" [checked]="informes_estratosSeleccionados.includes(e)" (change)="informes_toggleEstrato(e)">
+            {{ e }}
+          </label>
+        </div>
+      </div>
+
+      <!-- Archivos fuente -->
+      <div class="field full-width" *ngIf="archivosNombres.length > 0">
+        <label>Archivos fuente <span class="badge" *ngIf="archivosSeleccionados_informes.length > 0">{{ archivosSeleccionados_informes.length }}</span></label>
+        <div class="chips">
+          <button
+            *ngFor="let nombre of archivosNombres"
+            type="button"
+            (click)="toggleArchivo(nombre)"
+            [class.selected]="archivosSeleccionados_informes.includes(nombre)"
+          >{{ nombre }}</button>
+        </div>
+        <small class="helper-text">Sin selección = todos los archivos.</small>
+      </div>
+
+      <!-- Opciones específicas de proyección -->
+      <ng-container *ngIf="tipoInforme === 'PROYECCION'">
+        <div class="field">
+          <label>Base de meses (1 o 2)</label>
+          <select [(ngModel)]="mesesBase">
+            <option [ngValue]="1">Último mes</option>
+            <option [ngValue]="2">Últimos 2 meses</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Meses futuros a proyectar</label>
+          <select [(ngModel)]="mesesFuturos">
+            <option *ngFor="let n of [1,2,3,4,5,6,7,8,9,10,11,12]" [ngValue]="n">{{ n }}</option>
+          </select>
+        </div>
+      </ng-container>
+
+      <!-- Top N para morosos -->
+      <div class="field" *ngIf="tipoInforme === 'DEUDORES_MOROSOS'">
+        <label>Top N registros</label>
+        <input type="number" [(ngModel)]="topN" min="1" max="1000" />
+      </div>
+
+      <!-- Formato -->
+      <div class="field">
+        <label>Formato de salida</label>
+        <div class="options-row">
+          <label class="radio-label" [class.selected]="formato === 'xlsx'">
+            <input type="radio" value="xlsx" [(ngModel)]="formato"> Excel
+          </label>
+          <label class="radio-label" [class.selected]="formato === 'pdf'">
+            <input type="radio" value="pdf" [(ngModel)]="formato"> PDF
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <button class="generate-btn" (click)="generarInforme()" [disabled]="informes_loading">
+      <span *ngIf="!informes_loading">Generar Informe {{ formato === 'pdf' ? 'PDF' : 'Excel' }}</span>
+      <span *ngIf="informes_loading" class="btn-loading">
+        <span class="spinner-inline"></span> Generando…
+      </span>
+    </button>
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════
+       TAB: Usuarios
+  ══════════════════════════════════════════════════════ -->
+  <main class="admin-content" *ngIf="activeTab === 'usuarios'">
+    <h1>Gestión de Usuarios</h1>
+    <div class="section-divider"></div>
+
+    <div *ngIf="usuarios_error" class="alert error">{{ usuarios_error }}</div>
+    <div *ngIf="usuarios_loading" class="loading-state">Cargando usuarios…</div>
+
+    <div class="welcome-card" *ngIf="!usuarios_loading">
+      <table class="users-table" *ngIf="users.length > 0; else sinUsuarios">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Rol</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let u of users">
+            <td>{{ u.nombreCompleto }}</td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.correo }}</td>
+            <td>{{ u.telefono || '–' }}</td>
+            <td>
+              <span class="rol-badge" [class.admin]="u.rol === 'admin'">
+                {{ u.rol === 'admin' ? 'Admin' : 'Usuario' }}
+              </span>
+            </td>
+            <td>
+              <button class="small-btn danger" (click)="eliminarUsuario(u)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #sinUsuarios>
+        <p>No hay usuarios registrados.</p>
+      </ng-template>
+    </div>
   </main>
 </div>

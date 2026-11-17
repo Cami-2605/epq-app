@@ -157,7 +157,7 @@ export class UploadComponent implements OnInit {
     this.loading = true;
     try {
       this.archivos = await firstValueFrom(this.facturaService.getArchivosExcel()) || [];
-      console.log(`📋 Archivos cargados: ${this.archivos.length}`);
+      console.log(`Archivos cargados: ${this.archivos.length}`);
     } catch (error) {
       console.error('Error cargando archivos:', error);
       this.mensajeError = 'Error al cargar la lista de archivos';
